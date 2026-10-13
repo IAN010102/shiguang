@@ -753,7 +753,7 @@ details.more[open]>summary{ border-style:solid; }
     secCats:'分類管理', catsQ:'句子分類', catsC:'咖啡廳標籤', catsE:'活動標籤', newQ:'新增句子分類', newC:'新增咖啡廳標籤', newE:'新增活動標籤',
     secData:'資料', backup:'複製備份', restoreLabel:'還原（貼上備份內容）', restorePh:'貼上之前複製的備份', restore:'還原', exportMd:'複製成 Markdown（貼到 Notion）', clearSample:'清除範例資料', reset:'清空所有資料', resetArm:'再按一次，全部清空',
     dataNote:'資料只存在這個瀏覽器裡。換手機或清除瀏覽資料前，先複製備份。', about:'拾光小本 · 你的資料只在你的裝置上',
-    smartTitle:'智慧貼上', smartPh:'貼上任何東西：一句話、店家資訊、活動頁面…', smartPut:'放進哪裡', smartAuto:'已自動判斷，可以再改', smartGo:'放進去', aiBtn:'AI 整理', fabAI:'✦ AI 貼上', aiTitle:'AI 貼上', aiPh:'貼上文字,或直接丟一張截圖', aiGo:'整理', aiManual:'手動新增', aiTake:'收下', aiEdit:'改一下', aiAgain:'重來', aiBasic:'一般判斷', aiBasicNote:'AI 暫時不能用,先用一般判斷', aiShot:'上傳截圖', aiAsk:'這樣放對嗎?', secReview:'今日回顧', rvQuiz:'小測驗', rvPeek:'點開看答案', aiDl:function(n){return n<0?'報名已截止':(n===0?'今天截止':'離截止還有 '+n+' 天');}, aiDeadline:'截止', aiImg:'上傳截圖', aiBusy:'AI 讀取中…', aiFail:'AI 暫時不能用,已改用一般判斷', aiLimit:'今天的 AI 次數用完了,已改用一般判斷', aiNeed:'先貼上內容或選一張截圖', aiDone:'AI 已判斷', aiNext:'下一步', aiUnsure:'不確定', aiCheck:'小測驗',
+    smartTitle:'智慧貼上', smartPh:'貼上任何東西：一句話、店家資訊、活動頁面…', smartPut:'放進哪裡', smartAuto:'已自動判斷，可以再改', smartGo:'放進去', aiBtn:'AI 整理', dtDate:'日期', dtPlace:'地點', dtDeadline:'報名截止', dtHow:'怎麼報名', dtNext:'下一步', dtLink:'連結', dtNote:'備註', dtOrig:'原始內容', dtDone:'標記已完成', dtUndo:'改回未完成', dtDoneTag:'已完成', dtEdit:'編輯', rvDone:'完成', fabAI:'✦ AI 貼上', aiTitle:'AI 貼上', aiPh:'貼上文字,或直接丟一張截圖', aiGo:'整理', aiManual:'手動新增', aiTake:'收下', aiEdit:'改一下', aiAgain:'重來', aiBasic:'一般判斷', aiBasicNote:'AI 暫時不能用,先用一般判斷', aiShot:'上傳截圖', aiAsk:'這樣放對嗎?', secReview:'今日回顧', rvQuiz:'小測驗', rvPeek:'點開看答案', aiDl:function(n){return n<0?'報名已截止':(n===0?'今天截止':'離截止還有 '+n+' 天');}, aiDeadline:'截止', aiImg:'上傳截圖', aiBusy:'AI 讀取中…', aiFail:'AI 暫時不能用,已改用一般判斷', aiLimit:'今天的 AI 次數用完了,已改用一般判斷', aiNeed:'先貼上內容或選一張截圖', aiDone:'AI 已判斷', aiNext:'下一步', aiUnsure:'不確定', aiCheck:'小測驗',
     shareTitle:'做成圖片', shareStyle:'樣式', shareRatio:'比例', sNavy:'深藍', sWhite:'白', sInk:'炭黑', share:'分享', shareHint:'長按圖片可以存到相簿', shareFail:'這個瀏覽器不能直接分享，請長按圖片儲存',
     mdQ:'句子', mdC:'咖啡廳', mdE:'活動', mdVisits:'打卡', mdNote:'想法', mdSource:'出處', mdStatus:'狀態',
     tr:'被推薦', tw:'想買', cntR:function(n){return n+' 則推薦'}, cntW:function(n){return n+' 件想買的'}, fabR:'＋ 記推薦', fabW:'＋ 記一件', drawR:'抽一個來試', drawRT:'抽到這個，去試試',
@@ -948,7 +948,7 @@ details.more[open]>summary{ border-style:solid; }
     secCats:'Categories', catsQ:'Quote categories', catsC:'Café tags', catsE:'Event tags', newQ:'New quote category', newC:'New café tag', newE:'New event tag',
     secData:'Data', backup:'Copy backup', restoreLabel:'Restore (paste a backup)', restorePh:'Paste a backup you copied earlier', restore:'Restore', exportMd:'Copy as Markdown (paste into Notion)', clearSample:'Clear sample data', reset:'Erase all data', resetArm:'Tap again to erase everything',
     dataNote:'Your data lives only in this browser. Copy a backup before switching phones or clearing browsing data.', about:'Little Finds · your data stays on your device',
-    smartTitle:'Smart paste', smartPh:'Paste anything: a line, a café listing, an event page…', smartPut:'Put it in', smartAuto:'Detected automatically. You can change it', smartGo:'Put it in', aiBtn:'Sort with AI', fabAI:'✦ AI paste', aiTitle:'AI paste', aiPh:'Paste text, or drop in a screenshot', aiGo:'Sort it', aiManual:'Add manually', aiTake:'Keep it', aiEdit:'Edit', aiAgain:'Start over', aiBasic:'Basic sort', aiBasicNote:'AI is unavailable, used basic sorting', aiShot:'Upload screenshot', aiAsk:'Look right?', secReview:'Today\'s review', rvQuiz:'Quick quiz', rvPeek:'Tap to see the answer', aiDl:function(n){return n<0?'Deadline passed':(n===0?'Due today':n+' day'+(n===1?'':'s')+' until the deadline');}, aiDeadline:'Deadline', aiImg:'Upload screenshot', aiBusy:'AI is reading…', aiFail:'AI is unavailable, used basic detection instead', aiLimit:'AI limit reached for now, used basic detection instead', aiNeed:'Paste something or pick a screenshot first', aiDone:'AI sorted it', aiNext:'Next step', aiUnsure:'Unsure', aiCheck:'Quick check',
+    smartTitle:'Smart paste', smartPh:'Paste anything: a line, a café listing, an event page…', smartPut:'Put it in', smartAuto:'Detected automatically. You can change it', smartGo:'Put it in', aiBtn:'Sort with AI', dtDate:'Date', dtPlace:'Place', dtDeadline:'Sign-up deadline', dtHow:'How to sign up', dtNext:'Next step', dtLink:'Link', dtNote:'Notes', dtOrig:'Original text', dtDone:'Mark done', dtUndo:'Mark not done', dtDoneTag:'Done', dtEdit:'Edit', rvDone:'Done', fabAI:'✦ AI paste', aiTitle:'AI paste', aiPh:'Paste text, or drop in a screenshot', aiGo:'Sort it', aiManual:'Add manually', aiTake:'Keep it', aiEdit:'Edit', aiAgain:'Start over', aiBasic:'Basic sort', aiBasicNote:'AI is unavailable, used basic sorting', aiShot:'Upload screenshot', aiAsk:'Look right?', secReview:'Today\'s review', rvQuiz:'Quick quiz', rvPeek:'Tap to see the answer', aiDl:function(n){return n<0?'Deadline passed':(n===0?'Due today':n+' day'+(n===1?'':'s')+' until the deadline');}, aiDeadline:'Deadline', aiImg:'Upload screenshot', aiBusy:'AI is reading…', aiFail:'AI is unavailable, used basic detection instead', aiLimit:'AI limit reached for now, used basic detection instead', aiNeed:'Paste something or pick a screenshot first', aiDone:'AI sorted it', aiNext:'Next step', aiUnsure:'Unsure', aiCheck:'Quick check',
     shareTitle:'Make image', shareStyle:'Style', shareRatio:'Ratio', sNavy:'Navy', sWhite:'White', sInk:'Charcoal', share:'Share', shareHint:'Long-press the image to save it', shareFail:'Sharing is not supported here. Long-press the image to save it',
     mdQ:'Quotes', mdC:'Cafés', mdE:'Events', mdVisits:'Check-ins', mdNote:'Thoughts', mdSource:'Source', mdStatus:'Status',
     tr:'Recs', tw:'Wishlist', cntR:function(n){return n+(n===1?' rec':' recs')}, cntW:function(n){return n+(n===1?' item':' items')}, fabR:'+ Add rec', fabW:'+ Add item', drawR:'Pick one to try', drawRT:'Try this one',
@@ -2001,17 +2001,30 @@ details.more[open]>summary{ border-style:solid; }
     }
   }
   var PH={d:'sAll',q:'sQ',c:'sC',e:'sE',r:'sR',w:'sW',b:'sB',p:'sP',i:'sI',l:'sL',a:'sA',t:'sT',o:'sO',g:'sG'};
+  var swapBusy=false;
   function renderContent(dir){
     var c=$('#content'); if(!c) return;
+    if(dir&&!reduced()&&c.animate&&c.firstChild){
+      if(swapBusy) return;
+      swapBusy=true; c.style.minHeight=c.offsetHeight+'px';
+      var go=function(){ swapBusy=false; paintContent(dir); window.scrollTo(0,0); setTimeout(function(){ c.style.minHeight=''; },340); };
+      var out=c.animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateX('+(-dir*10)+'px)'}],{duration:120,easing:'ease-in',fill:'forwards'});
+      out.onfinish=go; out.oncancel=go; return;
+    }
+    paintContent(dir);
+  }
+  function paintContent(dir){
+    var c=$('#content'); if(!c) return;
+    c.getAnimations&&c.getAnimations().forEach(function(x){ x.cancel(); });
     if(tab==='d'){
       c.innerHTML=todayShell(); renderToday();
-      if(dir&&!reduced()&&c.animate) c.animate([{opacity:0,transform:'translateX('+(dir*20)+'px)'},{opacity:1,transform:'none'}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
+      if(dir&&!reduced()&&c.animate) c.animate([{opacity:0,transform:'translateX('+(dir*12)+'px)'},{opacity:1,transform:'none'}],{duration:320,easing:'cubic-bezier(.22,.61,.36,1)'});
       return;
     }
     c.innerHTML='<div class="bar" id="bar"></div>'+(tab==='w'?'<div class="wstats" id="wstats"></div>':'')
       +'<div class="srow"><input class="search wk" id="q" type="search" placeholder="'+esc(t(PH[tab]))+'" value="'+esc(search)+'"><span class="bt" id="srowb">'+srowBtns()+'</span></div><div class="xhint" id="xhint"></div><div id="fstat"></div><div id="ftags"></div><div id="list"></div>';
     renderBar(); renderWStats(); renderChips(); refreshList();
-    if(dir&&!reduced()&&c.animate) c.animate([{opacity:0,transform:'translateX('+(dir*20)+'px)'},{opacity:1,transform:'none'}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
+    if(dir&&!reduced()&&c.animate) c.animate([{opacity:0,transform:'translateX('+(dir*12)+'px)'},{opacity:1,transform:'none'}],{duration:320,easing:'cubic-bezier(.22,.61,.36,1)'});
   }
   function upcomingEvents(){ return S.events.filter(function(e){return !evState(e).past&&e.status!=='been'}).sort(evCmp); }
   function renderBar(){
@@ -2384,6 +2397,8 @@ details.more[open]>summary{ border-style:solid; }
       h+='<div class="btnrow" style="justify-content:center"><button class="btn" data-act="draw">'+t('again')+'</button><button class="btn ghost" data-act="drawEdit">'+t('edit')+'</button><button class="btn ghost" data-act="closeSheet">'+t('close')+'</button></div>';
     } else if(sheet.type==='smart'){
       h+=smartBody(d);
+    } else if(sheet.type==='edetail'){
+      h+=eDetailBody(sheet.id);
     } else if(sheet.type==='share'){
       h+='<h3>'+t('shareTitle')+'</h3><img class="shareimg" id="shareImg" alt="">';
       h+='<p class="hint" style="text-align:center">'+t('shareHint')+'</p>';
@@ -3593,7 +3608,7 @@ details.more[open]>summary{ border-style:solid; }
 
   function reviewHtml(){
     if(S.set.mods.e===false) return '';
-    var L=S.events.filter(function(e){ return e.ai&&!evState(e).past&&e.status!=='been'; }).sort(evCmp);
+    var L=S.events.filter(function(e){ return e.ai&&!e.ai.done&&!evState(e).past&&e.status!=='been'; }).sort(evCmp);
     if(!L.length) return '';
     var e=L[0], a=e.ai, rows=[];
     var st=evState(e); if(e.date) rows.push(esc(st.text+' · '+shortDate(e.date)+(e.time?' '+e.time:'')));
@@ -3601,9 +3616,7 @@ details.more[open]>summary{ border-style:solid; }
     if(a.how_to) rows.push(esc(a.how_to));
     if(a.next_step) rows.push('<b>'+esc(t('aiNext'))+'</b> '+esc(a.next_step));
     var head='<button class="linkbtn" data-act="eopen" data-v="'+esc(e.id)+'" style="text-align:left;display:block;width:100%;text-decoration:none;color:var(--ink)"><div class="wk" style="font-size:1.15em;margin-bottom:6px;color:var(--ink)">'+esc(e.name)+'</div>'+rows.map(function(r){return '<p class="hint" style="margin:3px 0">'+r+'</p>';}).join('')+'</button>';
-    var quiz='';
-    if(a.question&&a.answer) quiz='<details class="more" style="margin-top:12px;color:var(--ink)"><summary style="color:var(--ink)">'+esc(t('rvQuiz'))+' · '+esc(a.question)+'</summary><p class="hint" style="margin-top:8px"><b>'+esc(a.answer)+'</b></p></details>';
-    else if(a.question) quiz='<p class="hint" style="margin-top:12px">'+esc(t('rvQuiz'))+' · '+esc(a.question)+'</p>';
+    var quiz='<div style="margin-top:10px"><button class="linkbtn" data-act="aiDone" data-v="'+esc(e.id)+'">✓ '+esc(t('rvDone'))+'</button></div>';
     return sec(t('secReview'),L.length>1?'<span class="cnt">+'+(L.length-1)+'</span>':'','<div style="padding:16px;border-radius:14px;border:1.5px solid var(--ink2);background:var(--sheet);color:var(--ink)">'+head+quiz+'</div>');
   }
   function renderToday(){
@@ -4144,7 +4157,9 @@ details.more[open]>summary{ border-style:solid; }
       case 'settings': openSheet({type:'set',open:{}}); break;
       case 'qopen': openQ(v); break;
       case 'copen': openC(v); break;
-      case 'eopen': openE(v); break;
+      case 'eopen': openSheet({type:'edetail',id:v}); break;
+      case 'eEdit': openE(v,{swap:true}); break;
+      case 'aiDone': { var ee=eById(v); if(ee&&ee.ai){ ee.ai.done=!ee.ai.done; save(); if(sheet&&sheet.type==='edetail') renderSheet(false); afterChange(); } break; }
       case 'ropen': openR(v); break;
       case 'wopen': openW(v); break;
       case 'draw': draw(); break;
@@ -4509,13 +4524,33 @@ details.more[open]>summary{ border-style:solid; }
     rd.onerror=function(){ cb(''); };
     rd.readAsDataURL(file);
   }
+
+  function eDetailBody(id){
+    var e=eById(id); if(!e) return '<h3>—</h3><div class="btnrow"><button class="btn ghost" data-act="closeSheet">'+t('close')+'</button></div>';
+    var a=e.ai||{}, st=evState(e), d=e.date?parseISO(e.date):null, h='', row=function(k,v){ return v?'<div style="margin:10px 0"><div class="hint" style="margin:0">'+esc(t(k))+'</div><div style="color:var(--ink)">'+v+'</div></div>':''; };
+    h+='<h3>'+esc(e.name)+'</h3>';
+    if(e.status!=='been') h+='<p class="hint" style="margin:0 0 6px"><b style="color:var(--stamp)">'+esc(st.text)+'</b></p>';
+    h+=row('dtDate',d?esc(shortDate(e.date)+' '+t('wdp',t('wd')[d.getDay()])+(e.time?' · '+e.time:'')+((e.end&&e.end!==e.date)?' '+t('rangeTo',shortDate(e.end)):'')):(e.time?esc(e.time):''));
+    h+=row('dtPlace',e.place?'<a style="color:var(--stamp);text-decoration:underline;text-underline-offset:3px" href="'+esc('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e.place))+'" target="_blank" rel="noopener noreferrer">'+esc(e.place)+'</a>':'');
+    h+=row('dtDeadline',a.deadline?esc(shortDate(a.deadline)+' · '+t('aiDl',dayDiff(a.deadline))):'');
+    h+=row('dtHow',a.how_to?esc(a.how_to):'');
+    if(a.next_step) h+='<div style="margin:10px 0"><div class="hint" style="margin:0">'+esc(t('dtNext'))+(a.done?' · '+esc(t('dtDoneTag')):'')+'</div><div style="color:var(--ink);'+(a.done?'text-decoration:line-through;opacity:.6':'')+'">'+esc(a.next_step)+'</div></div>';
+    h+=row('dtLink',e.link?'<a style="color:var(--stamp);text-decoration:underline;text-underline-offset:3px" href="'+esc(e.link)+'" target="_blank" rel="noopener noreferrer">'+esc(e.link.replace(/^https?:\/\//,'').slice(0,48))+'</a>':'');
+    h+=row('dtNote',e.price?esc(e.price):'');
+    h+=row('dtNote',e.note?esc(e.note):'');
+    if(e.info) h+='<details class="more" style="margin-top:12px;color:var(--ink)"><summary style="color:var(--ink)">'+esc(t('dtOrig'))+'</summary><p class="hint" style="margin-top:8px;white-space:pre-wrap">'+esc(e.info)+'</p></details>';
+    var cal=(e.date&&!st.past)?gcalUrl(e):'';
+    h+='<div class="btnrow" style="margin-top:14px">'+(cal?'<a class="btn" href="'+esc(cal)+'" target="_blank" rel="noopener noreferrer" style="flex:1;text-align:center">'+t('addCal')+'</a>':'')+(a.next_step?'<button class="btn ghost" data-act="aiDone" data-v="'+esc(e.id)+'">'+esc(t(a.done?'dtUndo':'dtDone'))+'</button>':'')+'</div>';
+    h+='<div class="rowsb"><button class="linkbtn" data-act="eEdit" data-v="'+esc(e.id)+'">'+t('dtEdit')+'</button><button class="linkbtn" data-act="closeSheet">'+t('close')+'</button></div>';
+    return h;
+  }
   function smartBody(d){
     var h='';
     if(d.stage==='res'&&d.res){
       var r=d.res, rows=[];
       h+='<h3>'+t(r.ai?'aiDone':'aiBasic')+(r.ai&&r.confidence?' · '+Math.round(r.confidence*100)+'%':'')+'</h3>';
       h+='<div class="seg" id="smartSeg">'+dataTabs().map(function(k){return [k,t('t'+k)]}).map(function(x){return '<button class="'+(d.kind===x[0]?'on':'')+'" data-act="smartKind" data-v="'+x[0]+'">'+esc(x[1])+'</button>'}).join('')+'</div>';
-      h+='<div style="margin-top:14px;padding:16px 16px 24px;border-radius:14px;border:1.5px solid var(--ink2);background:var(--sheet);color:var(--ink)">';
+      h+='<div style="margin-top:14px;padding:16px;border-radius:14px;border:1.5px solid var(--ink2);background:var(--sheet);color:var(--ink)">';
       h+='<input class="field" id="f_aname" value="'+esc(r.name||'')+'" style="font-size:1.2em;font-weight:700;margin:0 0 8px" aria-label="'+esc(t('qName')||'')+'">';
       if(r.date) rows.push(esc(shortDate(r.date)+(r.time?' '+r.time:'')));
       if(r.place) rows.push(esc(r.place));
@@ -4525,7 +4560,6 @@ details.more[open]>summary{ border-style:solid; }
       h+=rows.map(function(x){ return '<p class="hint" style="margin:4px 0">'+x+'</p>'; }).join('');
       if(r.uncertain&&r.uncertain.length){ var U=UNC[lang==='en'?'en':'zh']; h+='<p class="hint warn" style="margin:8px 0 0">⚠ '+esc(t('aiUnsure'))+': '+esc(r.uncertain.map(function(u){return U[u]||u;}).join(', '))+'</p>'; }
       if(!r.ai&&r.note) h+='<p class="hint" style="margin:8px 0 0">'+esc(r.note)+'</p>';
-      if(r.question&&r.answer) h+='<details class="more" style="margin-top:12px;color:var(--ink)"><summary style="color:var(--ink)">'+esc(t('rvQuiz'))+' · '+esc(r.question)+'</summary><p class="hint" style="margin-top:8px"><b>'+esc(r.answer)+'</b></p></details>';
       h+='</div>';
       h+='<div class="btnrow"><button class="btn" data-act="smartSave" style="flex:1">'+t('aiTake')+'</button><button class="btn ghost" data-act="smartGo">'+t('aiEdit')+'</button></div>';
       h+='<div class="rowsb"><button class="linkbtn" data-act="smartReset">'+t('aiAgain')+'</button><button class="linkbtn" data-act="closeSheet">'+t('cancel')+'</button></div>';
