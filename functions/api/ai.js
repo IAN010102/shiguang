@@ -56,11 +56,32 @@ async function chat(env, model, messages, opts = {}) {
   return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
 }
 
+// Models sometimes put raw line breaks inside JSON strings; escape them so JSON.parse accepts the text.
+function escapeControlInStrings(t) {
+  let out = '', inStr = false, esc = false;
+  for (const ch of t) {
+    if (inStr) {
+      if (esc) { out += ch; esc = false; continue; }
+      if (ch === '\\') { out += ch; esc = true; continue; }
+      if (ch === '"') { inStr = false; out += ch; continue; }
+      if (ch === '\n') { out += '\\n'; continue; }
+      if (ch === '\r') { continue; }
+      if (ch === '\t') { out += '\\t'; continue; }
+      out += ch;
+    } else {
+      if (ch === '"') inStr = true;
+      out += ch;
+    }
+  }
+  return out;
+}
+
 function extractJson(s) {
   s = String(s).replace(/<think>[\s\S]*?<\/think>/g, '');
   const a = s.indexOf('{'), b = s.lastIndexOf('}');
   if (a < 0 || b <= a) throw new Error('no json');
-  return JSON.parse(s.slice(a, b + 1));
+  const body = s.slice(a, b + 1);
+  try { return JSON.parse(body); } catch { return JSON.parse(escapeControlInStrings(body)); }
 }
 
 export async function onRequestPost({ request, env }) {
@@ -104,7 +125,7 @@ export async function onRequestPost({ request, env }) {
       ...kinds.map((k) => `- ${k} = ${KIND_DESC[k]}`),
       'Reply with ONE JSON object and nothing else:',
       `Today is ${today}.`,
-      `'{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
+      '{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
       'Rules: never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5.',
       '"purpose": "remind" = time-bound things that only need a nudge when the time comes (events, deadlines, appointments, birthdays); "review" = knowledge or inspiration worth remembering and revisiting (a quote, a book passage, lecture notes, a key idea); "none" = just storing it (a place, something to buy, a link). Never choose "review" for an event or a deadline.',
       'If purpose is "review" and the content is class/lecture notes or a long passage: "summary" = concise study notes in the content language, max 500 characters, single line breaks only, no blank lines; otherwise "summary" is empty. If purpose is "review": "recall_q" = one question that tests the key idea, "recall_a" = a short answer taken from the content; otherwise both empty.',
