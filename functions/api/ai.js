@@ -104,9 +104,11 @@ export async function onRequestPost({ request, env }) {
       ...kinds.map((k) => `- ${k} = ${KIND_DESC[k]}`),
       'Reply with ONE JSON object and nothing else:',
       `Today is ${today}.`,
-      '{"kind": "<key>", "confidence": 0-1, "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "uncertain": ["fields you are not sure about"]}',
+      `'{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
       'Rules: never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5.',
-      lang === 'en' ? 'Write name, how_to, next_step and question in English.' : 'name、how_to、next_step、question 請用繁體中文書寫。',
+      '"purpose": "remind" = time-bound things that only need a nudge when the time comes (events, deadlines, appointments, birthdays); "review" = knowledge or inspiration worth remembering and revisiting (a quote, a book passage, lecture notes, a key idea); "none" = just storing it (a place, something to buy, a link). Never choose "review" for an event or a deadline.',
+      'If purpose is "review" and the content is class/lecture notes or a long passage: "summary" = concise study notes in the content language, max 500 characters, single line breaks only, no blank lines; otherwise "summary" is empty. If purpose is "review": "recall_q" = one question that tests the key idea, "recall_a" = a short answer taken from the content; otherwise both empty.',
+      lang === 'en' ? 'Write name, how_to, next_step, summary, recall_q and recall_a in English.' : 'name、how_to、next_step、summary、recall_q、recall_a 請用繁體中文書寫。',
     ].join('\n');
 
     const out = await chat(env, TEXT_MODEL, [
@@ -122,14 +124,16 @@ export async function onRequestPost({ request, env }) {
       confidence: Math.max(0, Math.min(1, Number(r.confidence) || 0)),
       name: str(r.name, 80),
       time: /^([01]\d|2[0-3]):[0-5]\d$/.test(r.time || '') ? r.time : '',
-      answer: str(r.answer, 200),
+      purpose: ['remind', 'review', 'none'].includes(r.purpose) ? r.purpose : 'none',
+      summary: str(r.summary, 600).replace(/\n\s*\n/g, '\n'),
+      recall_q: str(r.recall_q, 200),
+      recall_a: str(r.recall_a, 300),
       place: str(r.place, 120),
       date: /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') ? r.date : '',
       deadline: /^\d{4}-\d{2}-\d{2}$/.test(r.deadline || '') ? r.deadline : '',
       how_to: str(r.how_to, 300),
       next_step: str(r.next_step, 300),
       uncertain: Array.isArray(r.uncertain) ? r.uncertain.slice(0, 8).map((x) => str(String(x), 60)) : [],
-      question: str(r.question, 200),
       transcript: transcript ? transcript.slice(0, MAX_TEXT) : '',
       models: image ? [VISION_MODEL, TEXT_MODEL] : [TEXT_MODEL],
     });
