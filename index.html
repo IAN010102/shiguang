@@ -675,7 +675,7 @@ details.more[open]>summary{ border-style:solid; }
 </head>
 <body>
 <div class="wrap" id="view"></div>
-<button class="fab" id="fab" data-act="add"></button>
+<button class="fab" id="fab" data-act="ai"></button>
 <div class="sheetwrap" id="sheetWrap" hidden></div>
 <div class="selbar" id="selbar" role="toolbar" hidden></div>
 <div class="toast" id="toast" role="status"></div>
@@ -753,7 +753,7 @@ details.more[open]>summary{ border-style:solid; }
     secCats:'分類管理', catsQ:'句子分類', catsC:'咖啡廳標籤', catsE:'活動標籤', newQ:'新增句子分類', newC:'新增咖啡廳標籤', newE:'新增活動標籤',
     secData:'資料', backup:'複製備份', restoreLabel:'還原（貼上備份內容）', restorePh:'貼上之前複製的備份', restore:'還原', exportMd:'複製成 Markdown（貼到 Notion）', clearSample:'清除範例資料', reset:'清空所有資料', resetArm:'再按一次，全部清空',
     dataNote:'資料只存在這個瀏覽器裡。換手機或清除瀏覽資料前，先複製備份。', about:'拾光小本 · 你的資料只在你的裝置上',
-    smartTitle:'智慧貼上', smartPh:'貼上任何東西：一句話、店家資訊、活動頁面…', smartPut:'放進哪裡', smartAuto:'已自動判斷，可以再改', smartGo:'放進去', aiBtn:'AI 整理', secReview:'今日回顧', rvQuiz:'小測驗', rvPeek:'點開看答案', aiDl:function(n){return n<0?'報名已截止':(n===0?'今天截止':'離截止還有 '+n+' 天');}, aiDeadline:'截止', aiImg:'上傳截圖', aiBusy:'AI 讀取中…', aiFail:'AI 暫時不能用,已改用一般判斷', aiLimit:'今天的 AI 次數用完了,已改用一般判斷', aiNeed:'先貼上內容或選一張截圖', aiDone:'AI 已判斷', aiNext:'下一步', aiUnsure:'不確定', aiCheck:'小測驗',
+    smartTitle:'智慧貼上', smartPh:'貼上任何東西：一句話、店家資訊、活動頁面…', smartPut:'放進哪裡', smartAuto:'已自動判斷，可以再改', smartGo:'放進去', aiBtn:'AI 整理', fabAI:'✦ AI 貼上', aiTitle:'AI 貼上', aiPh:'貼上文字,或直接丟一張截圖', aiGo:'整理', aiManual:'手動新增', aiTake:'收下', aiEdit:'改一下', aiAgain:'重來', aiBasic:'一般判斷', aiBasicNote:'AI 暫時不能用,先用一般判斷', aiShot:'上傳截圖', aiAsk:'這樣放對嗎?', secReview:'今日回顧', rvQuiz:'小測驗', rvPeek:'點開看答案', aiDl:function(n){return n<0?'報名已截止':(n===0?'今天截止':'離截止還有 '+n+' 天');}, aiDeadline:'截止', aiImg:'上傳截圖', aiBusy:'AI 讀取中…', aiFail:'AI 暫時不能用,已改用一般判斷', aiLimit:'今天的 AI 次數用完了,已改用一般判斷', aiNeed:'先貼上內容或選一張截圖', aiDone:'AI 已判斷', aiNext:'下一步', aiUnsure:'不確定', aiCheck:'小測驗',
     shareTitle:'做成圖片', shareStyle:'樣式', shareRatio:'比例', sNavy:'深藍', sWhite:'白', sInk:'炭黑', share:'分享', shareHint:'長按圖片可以存到相簿', shareFail:'這個瀏覽器不能直接分享，請長按圖片儲存',
     mdQ:'句子', mdC:'咖啡廳', mdE:'活動', mdVisits:'打卡', mdNote:'想法', mdSource:'出處', mdStatus:'狀態',
     tr:'被推薦', tw:'想買', cntR:function(n){return n+' 則推薦'}, cntW:function(n){return n+' 件想買的'}, fabR:'＋ 記推薦', fabW:'＋ 記一件', drawR:'抽一個來試', drawRT:'抽到這個，去試試',
@@ -948,7 +948,7 @@ details.more[open]>summary{ border-style:solid; }
     secCats:'Categories', catsQ:'Quote categories', catsC:'Café tags', catsE:'Event tags', newQ:'New quote category', newC:'New café tag', newE:'New event tag',
     secData:'Data', backup:'Copy backup', restoreLabel:'Restore (paste a backup)', restorePh:'Paste a backup you copied earlier', restore:'Restore', exportMd:'Copy as Markdown (paste into Notion)', clearSample:'Clear sample data', reset:'Erase all data', resetArm:'Tap again to erase everything',
     dataNote:'Your data lives only in this browser. Copy a backup before switching phones or clearing browsing data.', about:'Little Finds · your data stays on your device',
-    smartTitle:'Smart paste', smartPh:'Paste anything: a line, a café listing, an event page…', smartPut:'Put it in', smartAuto:'Detected automatically. You can change it', smartGo:'Put it in', aiBtn:'Sort with AI', secReview:'Today\'s review', rvQuiz:'Quick quiz', rvPeek:'Tap to see the answer', aiDl:function(n){return n<0?'Deadline passed':(n===0?'Due today':n+' day'+(n===1?'':'s')+' until the deadline');}, aiDeadline:'Deadline', aiImg:'Upload screenshot', aiBusy:'AI is reading…', aiFail:'AI is unavailable, used basic detection instead', aiLimit:'AI limit reached for now, used basic detection instead', aiNeed:'Paste something or pick a screenshot first', aiDone:'AI sorted it', aiNext:'Next step', aiUnsure:'Unsure', aiCheck:'Quick check',
+    smartTitle:'Smart paste', smartPh:'Paste anything: a line, a café listing, an event page…', smartPut:'Put it in', smartAuto:'Detected automatically. You can change it', smartGo:'Put it in', aiBtn:'Sort with AI', fabAI:'✦ AI paste', aiTitle:'AI paste', aiPh:'Paste text, or drop in a screenshot', aiGo:'Sort it', aiManual:'Add manually', aiTake:'Keep it', aiEdit:'Edit', aiAgain:'Start over', aiBasic:'Basic sort', aiBasicNote:'AI is unavailable, used basic sorting', aiShot:'Upload screenshot', aiAsk:'Look right?', secReview:'Today\'s review', rvQuiz:'Quick quiz', rvPeek:'Tap to see the answer', aiDl:function(n){return n<0?'Deadline passed':(n===0?'Due today':n+' day'+(n===1?'':'s')+' until the deadline');}, aiDeadline:'Deadline', aiImg:'Upload screenshot', aiBusy:'AI is reading…', aiFail:'AI is unavailable, used basic detection instead', aiLimit:'AI limit reached for now, used basic detection instead', aiNeed:'Paste something or pick a screenshot first', aiDone:'AI sorted it', aiNext:'Next step', aiUnsure:'Unsure', aiCheck:'Quick check',
     shareTitle:'Make image', shareStyle:'Style', shareRatio:'Ratio', sNavy:'Navy', sWhite:'White', sInk:'Charcoal', share:'Share', shareHint:'Long-press the image to save it', shareFail:'Sharing is not supported here. Long-press the image to save it',
     mdQ:'Quotes', mdC:'Cafés', mdE:'Events', mdVisits:'Check-ins', mdNote:'Thoughts', mdSource:'Source', mdStatus:'Status',
     tr:'Recs', tw:'Wishlist', cntR:function(n){return n+(n===1?' rec':' recs')}, cntW:function(n){return n+(n===1?' item':' items')}, fabR:'+ Add rec', fabW:'+ Add item', drawR:'Pick one to try', drawRT:'Try this one',
@@ -1964,7 +1964,7 @@ details.more[open]>summary{ border-style:solid; }
     var color=cg?GROUPS[cg].color:TABC[tab];
     document.documentElement.style.setProperty('--tabc',color);
     document.documentElement.style.setProperty('--tabi',cg?'#FFFFFF':inkOn(color));
-    var fab=$('#fab'), label=t('fab'+tab.toUpperCase()); if(fab.textContent!==label) fab.textContent=label;
+    var fab=$('#fab'), label=t('fabAI'); if(fab.textContent!==label) fab.textContent=label;
     var tb=$('#tabs');
     if(active&&tb&&tb.scrollTo){ try{ tb.scrollTo({left:active.offsetLeft-(tb.clientWidth-active.offsetWidth)/2,behavior:reduced()?'auto':'smooth'}); }catch(e){} }
     updateTabFade();
@@ -2157,7 +2157,7 @@ details.more[open]>summary{ border-style:solid; }
       if((v=g('f_name'))!==undefined) d.name=v; if((v=g('f_info'))!==undefined) d.info=v; if((v=g('f_author'))!==undefined) d.author=v;
       if((v=g('f_page'))!==undefined) d.page=v; if((v=g('f_pages'))!==undefined) d.pages=v; if((v=g('f_note'))!==undefined) d.note=v;
     } else if(sheet.type==='smart'){
-      if((v=g('f_smart'))!==undefined) d.text=v;
+      if((v=g('f_smart'))!==undefined) d.text=v; if((v=g('f_aname'))!==undefined&&d.res) d.res.name=v;
     }
   }
   function openSheet(obj,swap){ sheetTok++; if(!sheet) lastFocus=document.activeElement; sheet=obj; if(!histPushed) histPush(); renderSheet(!swap); }
@@ -2383,11 +2383,7 @@ details.more[open]>summary{ border-style:solid; }
       h+='<h3>'+t(sheet.kind==='q'?'drawQT':(sheet.kind==='c'?'drawCT':(sheet.kind==='b'?'drawBT':(sheet.kind==='p'?'drawPT':(sheet.kind==='i'?'drawIT':'drawRT')))))+'</h3><div class="big">'+(sheet.kind==='q'?noteHtml(item,'div'):(sheet.kind==='c'?cafeHtml(item,false):(sheet.kind==='b'?bcardHtml(item,false):(sheet.kind==='p'?placeHtml(item,false):(sheet.kind==='i'?ideaHtml(item,'div'):rcardHtml(item,false))))))+'</div>';
       h+='<div class="btnrow" style="justify-content:center"><button class="btn" data-act="draw">'+t('again')+'</button><button class="btn ghost" data-act="drawEdit">'+t('edit')+'</button><button class="btn ghost" data-act="closeSheet">'+t('close')+'</button></div>';
     } else if(sheet.type==='smart'){
-      h+='<h3>'+t('smartTitle')+'</h3><textarea class="field" id="f_smart" style="min-height:130px" placeholder="'+esc(t('smartPh'))+'">'+esc(d.text)+'</textarea>';
-      h+='<div class="rowsb"><button class="linkbtn" data-act="readClip">'+t('pasteClip')+'</button><span class="hint" style="margin:0" id="smartHint">'+(d.text&&!d.manual?t('smartAuto'):'')+'</span></div>';
-      h+='<label>'+t('smartPut')+'</label><div class="seg" id="smartSeg">'+dataTabs().map(function(k){return [k,t('t'+k)]}).map(function(x){return '<button class="'+(d.kind===x[0]?'on':'')+'" data-act="smartKind" data-v="'+x[0]+'">'+esc(x[1])+'</button>'}).join('')+'</div>';
-      h+='<div class="btnrow"><button class="btn" data-act="smartAI" id="aiBtn">'+t('aiBtn')+'</button><label class="btn ghost" style="cursor:pointer">'+t('aiImg')+'<input type="file" accept="image/*" id="ai_file" hidden></label></div><div id="aiOut" class="hint" style="white-space:pre-wrap">'+(d.aiHtml||'')+'</div>';
-      h+='<div class="btnrow"><button class="btn" data-act="smartGo">'+t('smartGo')+'</button><button class="btn ghost" data-act="closeSheet">'+t('cancel')+'</button></div>';
+      h+=smartBody(d);
     } else if(sheet.type==='share'){
       h+='<h3>'+t('shareTitle')+'</h3><img class="shareimg" id="shareImg" alt="">';
       h+='<p class="hint" style="text-align:center">'+t('shareHint')+'</p>';
@@ -4127,8 +4123,7 @@ details.more[open]>summary{ border-style:solid; }
   function flushShare(){
     if(!pendingShare||sheet||!S.set.onboarded||!S.set.tipsSeen) return;
     var txt=pendingShare; pendingShare='';
-    var kd=classify(txt); if(dataTabs().indexOf(kd)<0) kd=dataTabs()[0];
-    openSheet({type:'smart',d:{text:txt,kind:kd,manual:false}});
+    openSmart(txt); setTimeout(aiSort,0);
     toast(t('shRecv'));
   }
 
@@ -4145,7 +4140,7 @@ details.more[open]>summary{ border-style:solid; }
       case 'fst': F[tab].s=v; renderChips(); refreshList(true); break;
       case 'ftg': F[tab].t=(F[tab].t===v)?'':v; renderChips(); refreshList(true); break;
       case 'add': ({d:function(){act('smart')},q:openQ,c:openC,e:openE,r:openR,w:openW,b:openB,p:openP,i:openI,l:openL,a:openA,t:openT,o:openO,g:openG})[tab](); break;
-      case 'smart': openSheet({type:'smart',d:{text:'',kind:(tab==='d'?dataTabs()[0]:tab),manual:false}},!!sheet); break;
+      case 'smart': openSmart(''); break;
       case 'settings': openSheet({type:'set',open:{}}); break;
       case 'qopen': openQ(v); break;
       case 'copen': openC(v); break;
@@ -4214,7 +4209,7 @@ details.more[open]>summary{ border-style:solid; }
       case 'readClip':
         if(navigator.clipboard&&navigator.clipboard.readText){
           navigator.clipboard.readText().then(function(tx){
-            var e=$('#f_smart'); if(e&&tx){ e.value=tx; smartDetect(); } else toast(t('clipEmpty'));
+            var e=$('#f_smart'); if(e&&tx){ e.value=tx; smartDetect(); aiSort(); } else toast(t('clipEmpty'));
           },function(){ toast(t('noClip')); });
         } else toast(t('pressPaste'));
         break;
@@ -4328,8 +4323,12 @@ details.more[open]>summary{ border-style:solid; }
       /* smart paste */
       case 'smartKind': syncDraft(); sheet.d.kind=v; sheet.d.manual=true; smartUpdateSeg(); break;
       case 'smartAI': { aiSort(); break; }
+      case 'smartSave': { smartSave(); break; }
+      case 'smartReset': { if(sheet&&sheet.type==='smart'){ sheet.d.stage='in'; sheet.d.res=null; sheet.d.manual=false; renderSheet(false); } break; }
+      case 'addManual': { closeSheet(function(){ act(tab==='d'?'quick':'add'); }); break; }
+      case 'ai': { if(!sheet) openSmart(''); break; }
       case 'smartGo': {
-        syncDraft(); var sd=sheet.d, txt=sd.text.trim(); if(!txt){ toast(t('needText')); return; }
+        syncDraft(); var sd=sheet.d; if(sd.res){ sd.aiName=sd.res.name||''; sd.ai=sd.res.ai?{name:sd.res.name,date:sd.res.date,time:sd.res.time,place:sd.res.place,deadline:sd.res.deadline,how_to:sd.res.how_to,next_step:sd.res.next_step,question:sd.res.question,answer:sd.res.answer,uncertain:sd.res.uncertain,at:Date.now()}:null; if(!sd.text.trim()) sd.text=sd.res.name||''; } var txt=sd.text.trim(); if(!txt){ toast(t('needText')); return; }
         var kind=sd.kind; if(kind!==tab){ setTab(kind); }
         if(kind==='q') openQ(null,{text:txt,swap:true});
         else if(kind==='c') openC(null,{name:(sd.aiName||guessName(txt)),info:txt,swap:true});
@@ -4491,8 +4490,9 @@ details.more[open]>summary{ border-style:solid; }
     }
   }
 
-  /* ---------- AI sort (Nebius Token Factory via /api/ai) ---------- */
+  /* ---------- AI paste (Nebius Token Factory via /api/ai) ---------- */
   var aiImage='', aiBusy=false;
+  var UNC={zh:{year:'年份',date:'日期',time:'時間',deadline:'截止日',place:'地點',name:'名稱'},en:{year:'year',date:'date',time:'time',deadline:'deadline',place:'place',name:'name'}};
   function aiShrink(file,cb){
     var rd=new FileReader();
     rd.onload=function(){
@@ -4509,37 +4509,71 @@ details.more[open]>summary{ border-style:solid; }
     rd.onerror=function(){ cb(''); };
     rd.readAsDataURL(file);
   }
+  function smartBody(d){
+    var h='';
+    if(d.stage==='res'&&d.res){
+      var r=d.res, rows=[];
+      h+='<h3>'+t(r.ai?'aiDone':'aiBasic')+(r.ai&&r.confidence?' · '+Math.round(r.confidence*100)+'%':'')+'</h3>';
+      h+='<div class="seg" id="smartSeg">'+dataTabs().map(function(k){return [k,t('t'+k)]}).map(function(x){return '<button class="'+(d.kind===x[0]?'on':'')+'" data-act="smartKind" data-v="'+x[0]+'">'+esc(x[1])+'</button>'}).join('')+'</div>';
+      h+='<div style="margin-top:14px;padding:16px 16px 24px;border-radius:14px;border:1.5px solid var(--ink2);background:var(--sheet);color:var(--ink)">';
+      h+='<input class="field" id="f_aname" value="'+esc(r.name||'')+'" style="font-size:1.2em;font-weight:700;margin:0 0 8px" aria-label="'+esc(t('qName')||'')+'">';
+      if(r.date) rows.push(esc(shortDate(r.date)+(r.time?' '+r.time:'')));
+      if(r.place) rows.push(esc(r.place));
+      if(r.deadline) rows.push('<b>'+esc(t('aiDl',dayDiff(r.deadline))+' ('+shortDate(r.deadline)+')')+'</b>');
+      if(r.how_to) rows.push(esc(r.how_to));
+      if(r.next_step) rows.push('<b>'+esc(t('aiNext'))+'</b> '+esc(r.next_step));
+      h+=rows.map(function(x){ return '<p class="hint" style="margin:4px 0">'+x+'</p>'; }).join('');
+      if(r.uncertain&&r.uncertain.length){ var U=UNC[lang==='en'?'en':'zh']; h+='<p class="hint warn" style="margin:8px 0 0">⚠ '+esc(t('aiUnsure'))+': '+esc(r.uncertain.map(function(u){return U[u]||u;}).join(', '))+'</p>'; }
+      if(!r.ai&&r.note) h+='<p class="hint" style="margin:8px 0 0">'+esc(r.note)+'</p>';
+      if(r.question&&r.answer) h+='<details class="more" style="margin-top:12px;color:var(--ink)"><summary style="color:var(--ink)">'+esc(t('rvQuiz'))+' · '+esc(r.question)+'</summary><p class="hint" style="margin-top:8px"><b>'+esc(r.answer)+'</b></p></details>';
+      h+='</div>';
+      h+='<div class="btnrow"><button class="btn" data-act="smartSave" style="flex:1">'+t('aiTake')+'</button><button class="btn ghost" data-act="smartGo">'+t('aiEdit')+'</button></div>';
+      h+='<div class="rowsb"><button class="linkbtn" data-act="smartReset">'+t('aiAgain')+'</button><button class="linkbtn" data-act="closeSheet">'+t('cancel')+'</button></div>';
+      return h;
+    }
+    h+='<h3>'+t('aiTitle')+'</h3>';
+    if(d.stage==='busy'){
+      return h+'<div style="padding:40px 0;text-align:center"><p class="wk">'+esc(t('aiBusy'))+'</p></div>';
+    }
+    h+='<textarea class="field" id="f_smart" style="min-height:120px" placeholder="'+esc(t('aiPh'))+'">'+esc(d.text)+'</textarea>';
+    h+='<div class="btnrow"><label class="btn ghost" style="cursor:pointer;flex:1;text-align:center">'+t('aiShot')+'<input type="file" accept="image/*" id="ai_file" hidden></label><button class="btn ghost" data-act="readClip" style="flex:1">'+t('pasteClip')+'</button></div>';
+    h+='<div class="btnrow"><button class="btn" data-act="smartAI" style="flex:1">'+t('aiGo')+'</button></div>';
+    h+='<div class="rowsb"><button class="linkbtn" data-act="addManual">'+t('aiManual')+'</button><button class="linkbtn" data-act="closeSheet">'+t('cancel')+'</button></div>';
+    return h;
+  }
+  function openSmart(text){ openSheet({type:'smart',d:{text:text||'',kind:dataTabs()[0],manual:false,stage:'in',res:null}},!!sheet); }
   function aiSort(){
     if(aiBusy||!sheet||sheet.type!=='smart') return;
     syncDraft(); var d=sheet.d, txt=d.text.trim();
     if(!txt&&!aiImage){ toast(t('aiNeed')); return; }
-    var out=$('#aiOut'), btn=$('#aiBtn'); aiBusy=true;
-    if(out) out.textContent=t('aiBusy'); if(btn) btn.disabled=true;
-    var done=function(){ aiBusy=false; aiImage=''; var b=$('#aiBtn'); if(b) b.disabled=false; };
-    var fallback=function(msg){
-      done(); if(sheet&&sheet.type==='smart'&&txt){ d.kind=classify(txt); smartUpdateSeg(); }
-      var o=$('#aiOut'); if(o) o.textContent=''; toast(msg);
+    aiBusy=true; d.stage='busy'; renderSheet(false);
+    var show=function(res){
+      aiBusy=false; aiImage='';
+      if(!sheet||sheet.type!=='smart') return;
+      d.res=res; d.stage='res'; d.manual=true;
+      d.kind=(dataTabs().indexOf(res.kind)>=0)?res.kind:dataTabs()[0];
+      renderSheet(false);
+    };
+    var fail=function(msg){
+      aiBusy=false; aiImage='';
+      if(!sheet||sheet.type!=='smart') return;
+      if(!txt){ d.stage='in'; renderSheet(false); toast(msg); return; }
+      show({kind:classify(txt),name:guessName(txt),ai:false,note:t('aiBasicNote')});
     };
     fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({text:txt,image:aiImage||undefined,kinds:dataTabs(),lang:(typeof lang!=='undefined'&&lang==='en')?'en':'zh',today:isoOf(new Date())})})
+      body:JSON.stringify({text:txt,image:aiImage||undefined,kinds:dataTabs(),lang:(lang==='en')?'en':'zh',today:isoOf(new Date())})})
     .then(function(r){ if(r.status===429) throw new Error('limit'); if(!r.ok) return r.json().catch(function(){return {};}).then(function(j){ throw new Error('fail:'+r.status+':'+(j.error||'')+(j.detail?' '+j.detail:'')); }); return r.json(); })
     .then(function(r){
-      done(); if(!sheet||sheet.type!=='smart') return;
-      d.kind=dataTabs().indexOf(r.kind)>=0?r.kind:d.kind; d.manual=true; d.aiName=r.name||''; d.ai={name:r.name,date:r.date,time:r.time,place:r.place,deadline:r.deadline,how_to:r.how_to,next_step:r.next_step,question:r.question,answer:r.answer,uncertain:r.uncertain,at:Date.now()};
-      if(r.transcript&&!d.text.trim()){ d.text=r.transcript.replace(/\[uncertain\]/g,'[?]'); var ta=$('#f_smart'); if(ta) ta.value=d.text; }
-      var L=[t('aiDone')+(r.confidence?' · '+Math.round(r.confidence*100)+'%':'')];
-      if(r.name) L.push('· '+r.name);
-      if(r.date) L.push('· '+r.date+(r.time?' '+r.time:''));
-      if(r.deadline) L.push('· '+t('aiDeadline')+' '+r.deadline);
-      if(r.place) L.push('· '+r.place);
-      if(r.how_to) L.push('· '+r.how_to);
-      if(r.next_step) L.push(t('aiNext')+': '+r.next_step);
-      if(r.uncertain&&r.uncertain.length) L.push(t('aiUnsure')+': '+r.uncertain.join(', '));
-      if(r.question) L.push(t('aiCheck')+': '+r.question+(r.answer?'  → '+r.answer:''));
-      var o=$('#aiOut'); if(o) o.textContent=L.join('\n');
-      smartUpdateSeg(); var h=$('#smartHint'); if(h) h.textContent='';
+      if(r.transcript&&!d.text.trim()) d.text=r.transcript.replace(/\[uncertain\]/g,'[?]');
+      delete r.transcript; r.ai=true; show(r);
     })
-    .catch(function(e){ var m=(e&&e.message)||''; fallback(t(m==='limit'?'aiLimit':'aiFail')+(m.indexOf('fail:')===0?' ['+m.slice(5)+']':'')); });
+    .catch(function(e){ var m=(e&&e.message)||''; fail(t(m==='limit'?'aiLimit':'aiFail')+(m.indexOf('fail:')===0?' ['+m.slice(5)+']':'')); });
+  }
+  function smartSave(){
+    syncDraft(); var d=sheet.d; if(!d.res) return; var kind=d.kind;
+    act('smartGo');
+    var SV={q:saveQ,c:saveC,e:saveE,r:saveR,w:saveW,b:saveB,l:saveL,a:saveA,t:saveTrip,o:saveO,g:saveG,p:saveP,i:saveI};
+    if(sheet&&sheet.type!=='smart'&&SV[kind]) SV[kind]();
   }
   function smartUpdateSeg(){
     var d=sheet.d;
@@ -4561,6 +4595,7 @@ details.more[open]>summary{ border-style:solid; }
     var b=e.target.closest('[data-act]'); if(!b||b.disabled) return;
     try{ act(b.dataset.act,b.dataset.v); }catch(err){ onErr(err); try{ toast(t('errToast')); }catch(x){} }
   });
+  document.addEventListener('paste',function(e){ var el=e.target; if(el&&el.id==='f_smart'&&sheet&&sheet.type==='smart') setTimeout(function(){ if(sheet&&sheet.type==='smart'&&$('#f_smart')&&$('#f_smart').value.trim()) aiSort(); },60); });
   document.addEventListener('change',function(e){
     var el=e.target;
     if(el&&el.id==='ai_file'){ var af=el.files&&el.files[0]; if(af) aiShrink(af,function(u){ aiImage=u; if(u) aiSort(); }); el.value=''; return; }
