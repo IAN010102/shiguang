@@ -129,7 +129,7 @@ export async function onRequestPost({ request, env }) {
       models: image ? [VISION_MODEL, TEXT_MODEL] : [TEXT_MODEL],
     });
   } catch (e) {
-    return json({ error: 'ai_failed' }, 502);
+    return json({ error: 'ai_failed', detail: String((e && e.message) || e).slice(0, 120) }, 502);
   }
 }
 

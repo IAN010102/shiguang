@@ -4505,7 +4505,7 @@ details.more[open]>summary{ border-style:solid; }
     };
     fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},
       body:JSON.stringify({text:txt,image:aiImage||undefined,kinds:dataTabs(),lang:(typeof lang!=='undefined'&&lang==='en')?'en':'zh'})})
-    .then(function(r){ if(r.status===429) throw new Error('limit'); if(!r.ok) throw new Error('fail'); return r.json(); })
+    .then(function(r){ if(r.status===429) throw new Error('limit'); if(!r.ok) return r.json().catch(function(){return {};}).then(function(j){ throw new Error('fail:'+r.status+':'+(j.error||'')+(j.detail?' '+j.detail:'')); }); return r.json(); })
     .then(function(r){
       done(); if(!sheet||sheet.type!=='smart') return;
       d.kind=dataTabs().indexOf(r.kind)>=0?r.kind:d.kind; d.manual=true; d.aiName=r.name||'';
@@ -4520,7 +4520,7 @@ details.more[open]>summary{ border-style:solid; }
       var o=$('#aiOut'); if(o) o.textContent=L.join('\n');
       smartUpdateSeg(); var h=$('#smartHint'); if(h) h.textContent='';
     })
-    .catch(function(e){ fallback(t(e&&e.message==='limit'?'aiLimit':'aiFail')); });
+    .catch(function(e){ var m=(e&&e.message)||''; fallback(t(m==='limit'?'aiLimit':'aiFail')+(m.indexOf('fail:')===0?' ['+m.slice(5)+']':'')); });
   }
   function smartUpdateSeg(){
     var d=sheet.d;
