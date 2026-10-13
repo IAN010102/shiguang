@@ -3852,7 +3852,7 @@ details.more[open]>summary{ border-style:solid; }
     if(!g||typeof g!=='object'||g.d!==iso||!Array.isArray(g.picks)) g=S.set.dg={d:iso,picks:[],done:{},skip:{}};
     if(!g.done||typeof g.done!=='object') g.done={};
     if(!g.skip||typeof g.skip!=='object') g.skip={};
-    g.picks=g.picks.filter(function(p){return p&&KINDS[p.k]&&findItem(p.k,p.id)});
+    g.picks=g.picks.filter(function(p){return p&&(p.k==='q'||p.k==='i')&&KINDS[p.k]&&findItem(p.k,p.id)});
     var used=g.picks.length+Object.keys(g.skip).length;
     if(used<DG_N){
       var ex={}; g.picks.forEach(function(p){ex[dgKey(p.k,p.id)]=1}); Object.keys(g.skip).forEach(function(sk){ex[sk]=1});
