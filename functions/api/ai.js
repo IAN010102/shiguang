@@ -104,7 +104,7 @@ export async function onRequestPost({ request, env }) {
       ...kinds.map((k) => `- ${k} = ${KIND_DESC[k]}`),
       'Reply with ONE JSON object and nothing else:',
       `Today is ${today}.`,
-      '{"kind": "<key>", "confidence": 0-1, "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "uncertain": ["fields you are not sure about"], "question": "a self-check question about one concrete fact in the content, e.g. a date, place, price or requirement", "answer": "the answer to that question, taken from the content"}',
+      '{"kind": "<key>", "confidence": 0-1, "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "uncertain": ["fields you are not sure about"], "question": "a self-check question about one concrete fact in the content, e.g. a date, place, price or requirement", "answer": "the answer to that question, taken from the content"}',
       'Rules: never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5. The question must be answerable only by someone who read the content, never a vague question like "what is it about".',
       lang === 'en' ? 'Write name, how_to, next_step and question in English.' : 'name、how_to、next_step、question 請用繁體中文書寫。',
     ].join('\n');
@@ -123,6 +123,7 @@ export async function onRequestPost({ request, env }) {
       name: str(r.name, 80),
       time: /^([01]\d|2[0-3]):[0-5]\d$/.test(r.time || '') ? r.time : '',
       answer: str(r.answer, 200),
+      place: str(r.place, 120),
       date: /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') ? r.date : '',
       deadline: /^\d{4}-\d{2}-\d{2}$/.test(r.deadline || '') ? r.deadline : '',
       how_to: str(r.how_to, 300),
