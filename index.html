@@ -3604,11 +3604,11 @@ details.more[open]>summary{ border-style:solid; }
     if(a.deadline) rows.push(esc(t('aiDl',dayDiff(a.deadline))+' ('+shortDate(a.deadline)+')'));
     if(a.how_to) rows.push(esc(a.how_to));
     if(a.next_step) rows.push('<b>'+esc(t('aiNext'))+'</b> '+esc(a.next_step));
-    var head='<button class="linkbtn" data-act="eopen" data-v="'+esc(e.id)+'" style="text-align:left;display:block;width:100%;text-decoration:none;color:inherit"><div class="wk" style="font-size:1.15em;margin-bottom:6px">'+esc(e.name)+'</div>'+rows.map(function(r){return '<p class="hint" style="margin:3px 0">'+r+'</p>';}).join('')+'</button>';
+    var head='<button class="linkbtn" data-act="eopen" data-v="'+esc(e.id)+'" style="text-align:left;display:block;width:100%;text-decoration:none;color:var(--ink)"><div class="wk" style="font-size:1.15em;margin-bottom:6px;color:var(--ink)">'+esc(e.name)+'</div>'+rows.map(function(r){return '<p class="hint" style="margin:3px 0">'+r+'</p>';}).join('')+'</button>';
     var quiz='';
-    if(a.question&&a.answer) quiz='<details class="more" style="margin-top:12px"><summary>'+esc(t('rvQuiz'))+' · '+esc(a.question)+'</summary><p class="hint" style="margin-top:8px"><b>'+esc(a.answer)+'</b></p></details>';
+    if(a.question&&a.answer) quiz='<details class="more" style="margin-top:12px;color:var(--ink)"><summary style="color:var(--ink)">'+esc(t('rvQuiz'))+' · '+esc(a.question)+'</summary><p class="hint" style="margin-top:8px"><b>'+esc(a.answer)+'</b></p></details>';
     else if(a.question) quiz='<p class="hint" style="margin-top:12px">'+esc(t('rvQuiz'))+' · '+esc(a.question)+'</p>';
-    return sec(t('secReview'),L.length>1?'<span class="cnt">+'+(L.length-1)+'</span>':'','<div class="note" style="padding:16px;border-radius:14px;border:1.5px solid var(--line,#8884)">'+head+quiz+'</div>');
+    return sec(t('secReview'),L.length>1?'<span class="cnt">+'+(L.length-1)+'</span>':'','<div style="padding:16px;border-radius:14px;border:1.5px solid var(--ink2);background:var(--sheet);color:var(--ink)">'+head+quiz+'</div>');
   }
   function renderToday(){
     var el=$('#gres'); if(!el) return;
