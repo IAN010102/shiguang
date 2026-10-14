@@ -119,6 +119,29 @@ function addressCheck(item, results, lang) {
   return null;
 }
 
+// Same idea for English street addresses (e.g. "66 Mint St").
+const US_ADDR = /\b(\d{1,5})\s+((?:[NSEW]\.?\s+)?[A-Za-z0-9.'’-]+(?:\s+[A-Za-z0-9.'’-]+){0,2}?)\s+(St|Street|Ave|Avenue|Rd|Road|Blvd|Boulevard|Dr|Drive|Ln|Lane|Way|Pl|Place|Ct|Court|Hwy|Highway|Pkwy|Parkway|Sq|Square)\b\.?/gi;
+const TYPE_NORM = { street: 'st', avenue: 'ave', road: 'rd', boulevard: 'blvd', drive: 'dr', lane: 'ln', place: 'pl', court: 'ct', highway: 'hwy', parkway: 'pkwy', square: 'sq' };
+function usAddressCheck(item, results, lang) {
+  if (!['c', 'p'].includes(item.kind) || !item.place || !item.name) return null;
+  const N = lang === 'en' ? { ok: 'Address matches', diff: 'Address differs from what you saved' } : { ok: '地址與你存的相符', diff: '網路上的地址和你存的不同' };
+  const key = (m) => m[1] + '|' + m[2].toLowerCase().replace(/[^a-z0-9]/g, '') + '|' + (TYPE_NORM[m[3].toLowerCase()] || m[3].toLowerCase());
+  const claim = [...String(item.place).matchAll(US_ADDR)][0];
+  if (!claim) return null;
+  const ck = key(claim), name = sq(item.name);
+  let other = null;
+  for (const r of results) {
+    const body = r.title + ' ' + r.content;
+    if (!sq(body).includes(name)) continue;
+    for (const m of body.matchAll(US_ADDR)) {
+      if (key(m) === ck) return { status: 'confirmed', note: N.ok, evidence: m[0].trim().slice(0, 160), source: { title: r.title, url: r.url } };
+      if (!other) other = { m, r };
+    }
+  }
+  if (other) return { status: 'conflict', note: N.diff, evidence: other.m[0].trim().slice(0, 160), source: { title: other.r.title, url: other.r.url }, suggest: { date: '', deadline: '', place: other.m[0].trim().slice(0, 120) } };
+  return null;
+}
+
 async function verifyOnline(env, item, lang, today) {
   const q = [item.name, item.place].filter(Boolean).join(' ').slice(0, 200);
   const res = await fetch('https://api.tavily.com/search', {
@@ -131,7 +154,7 @@ async function verifyOnline(env, item, lang, today) {
   const results = (data.results || []).filter((r) => r && r.url && r.content).slice(0, 4)
     .map((r) => ({ title: String(r.title || '').slice(0, 120), url: String(r.url), content: String(r.content).slice(0, 700) }));
   if (!results.length) return null;
-  const det = addressCheck(item, results, lang);
+  const det = addressCheck(item, results, lang) || usAddressCheck(item, results, lang);
   if (det) return { ...det, checked: results.length };
   const claim = { name: item.name, date: item.date, time: item.time, place: item.place, deadline: item.deadline };
   const sys = [

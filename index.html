@@ -1582,7 +1582,7 @@ details.more[open]>summary{ border-style:solid; }
   }
   function bracketName(txt){ var m=txt.match(/[《「『“](.{1,30}?)[》」』”]/); return m?m[1]:''; }
   function classify(txt){
-    var en=dataTabs(), sc={q:0,c:0,e:0,r:0,w:0,b:0,l:0,o:0,g:0,a:0,t:0}, ev=parseEvent(txt), cf=parseCafe(txt), bk=parseBook(txt);
+    var en=dataTabs(), sc={q:0,c:0,e:0,r:0,w:0,b:0,l:0,o:0,g:0,a:0,t:0,i:0}, ev=parseEvent(txt), cf=parseCafe(txt), bk=parseBook(txt);
     if(ev.date) sc.e+=2; if(ev.time) sc.e+=1;
     if(/演唱會|音樂祭|展覽|特展|市集|快閃|講座|影展|工作坊|購票|售票|票價|展期|活動|concert|festival|exhibition|tickets?|market|pop-?up|workshop|lineup/i.test(txt)) sc.e+=2;
     if(cf.ig) sc.c+=1; if(cf.address) sc.c+=1;
@@ -1591,6 +1591,8 @@ details.more[open]>summary{ border-style:solid; }
     if(bk.author||bk.pages) sc.b+=2;
     if(/作者|出版社|isbn|讀完|讀到|頁數|book by|chapters?\b/i.test(txt)) sc.b+=2;
     if(/蝦皮|shopee|momo|pchome|amazon|coupang|加入購物車|購物車|特價|優惠|折扣|開團|預購|discount|add to cart|\bsale\b/i.test(txt)) sc.w+=2;
+    if(/[$€£]\s?\d|\b(?:usd|eur)\b|\bprice\b|buy now|wishlist|free shipping|in stock|\bon sale\b/i.test(txt)) sc.w+=2;
+    if(/^\s*(?:idea|note|thought|todo|想法|靈感|筆記)\s*[:：]/i.test(txt)) sc.i+=4;
     if(/推薦|你一定要(?:看|聽|試|去|玩)|必看|必聽|必試|recommend|you (?:have to|gotta|should|must) (?:watch|try|listen|read|play)|must[- ](?:watch|try|read)/i.test(txt)) sc.r+=3;
     var hasUrl=/https?:\/\/[^\s]+/.test(txt), bare=txt.replace(/https?:\/\/[^\s]+/g,'').trim();
     if(hasUrl&&!cf.map){ sc.l+=1; if(bare.length<140) sc.l+=2; }
@@ -1599,7 +1601,7 @@ details.more[open]>summary{ border-style:solid; }
     if(/生日|紀念日|週年|anniversary|birthday/i.test(txt)) sc.a+=3;
     if(/旅行|行程|機票|訂房|飯店|住宿|itinerary|flight|hotel|\btrip\b/i.test(txt)) sc.t+=3;
     var best='q', top=0;
-    ['e','c','w','r','b','l','o','g','a','t'].forEach(function(k){ if(en.indexOf(k)>=0&&sc[k]>top){ best=k; top=sc[k]; } });
+    ['e','c','w','r','b','l','o','g','a','t','i'].forEach(function(k){ if(en.indexOf(k)>=0&&sc[k]>top){ best=k; top=sc[k]; } });
     return en.indexOf(best)>=0?best:en[0];
   }
   function guessName(txt){
@@ -4334,7 +4336,7 @@ details.more[open]>summary{ border-style:solid; }
       case 'smartSave': { smartSave(); break; }
       case 'smartPick': { if(sheet&&sheet.type==='smart'&&sheet.d.res&&sheet.d.res.multi){ var mi=sheet.d.res.multi[+v]; if(mi) mi.sel=!mi.sel; renderSheet(false); } break; }
       case 'smartSaveMulti': { smartSaveMulti(); break; }
-      case 'verApply': { if(sheet&&sheet.type==='smart'&&sheet.d.res&&sheet.d.res.verify){ syncDraft(); var vr=sheet.d.res, sg=vr.verify.suggest||{}; if(sg.date) vr.date=sg.date; if(sg.deadline) vr.deadline=sg.deadline; if(sg.place) vr.place=sg.place; vr.verify=Object.assign({},vr.verify,{status:'confirmed',suggest:undefined,note:t('verApplied')}); renderSheet(false); } break; }
+      case 'verApply': { if(sheet&&sheet.type==='smart'&&sheet.d.res&&sheet.d.res.verify){ syncDraft(); var vr=sheet.d.res, sg=vr.verify.suggest||{}; if(sg.date) vr.date=sg.date; if(sg.deadline) vr.deadline=sg.deadline; var oldP=vr.place; if(sg.place){ if(oldP){ ['next_step','how_to','notes'].forEach(function(f){ if(vr[f]&&vr[f].indexOf(oldP)>=0) vr[f]=vr[f].split(oldP).join(sg.place); }); } vr.place=sg.place; } vr.verify=Object.assign({},vr.verify,{status:'confirmed',suggest:undefined,note:t('verApplied')}); renderSheet(false); } break; }
       case 'smartReset': { if(sheet&&sheet.type==='smart'){ sheet.d.stage='in'; sheet.d.res=null; sheet.d.manual=false; renderSheet(false); } break; }
       case 'addManual': { closeSheet(function(){ act(tab==='d'?'quick':'add'); }); break; }
       case 'ai': { if(!sheet) openSmart(''); break; }
