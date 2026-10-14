@@ -113,7 +113,8 @@ async function verifyOnline(env, item, lang, today) {
     { role: 'system', content: sys },
     { role: 'user', content: 'Saved details: ' + JSON.stringify(claim) + '\nSnippets:\n' + results.map((r, i) => `[${i}] ${r.title}\n${r.content}`).join('\n\n') },
   ], { max_tokens: 3000 });
-  const v = extractJson(out);
+  let v;
+  try { v = extractJson(out); } catch (e) { throw new Error('nojson:' + String(out).replace(/<think>[\s\S]*?(<\/think>|$)/g, '').replace(/\s+/g, ' ').trim().slice(0, 70) + (/<think>/.test(out) && !/<\/think>/.test(out) ? ' [cut during thinking]' : '')); }
   const idx = Number(v.source);
   const src = Number.isInteger(idx) && idx >= 0 && idx < results.length ? results[idx] : null;
   const ev = typeof v.evidence === 'string' ? v.evidence.trim() : '';
