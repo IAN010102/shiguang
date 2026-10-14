@@ -132,6 +132,25 @@ async function verifyOnline(env, item, lang, today) {
   };
 }
 
+// Models sometimes "fix" a proper name (e.g. read the word 打卡 as a verb and drop it). For places and shops, if the
+// returned name is not literally in the source text, snap it back to the closest short line that is.
+function snapName(name, text, kind) {
+  if (!name || !['c', 'p'].includes(kind)) return name;
+  const squash = (t) => String(t).replace(/\s+/g, '').toLowerCase();
+  const lines = String(text).split('\n').map((l) => l.trim()).filter((l) => l.length >= 2 && l.length <= 30);
+  const n = squash(name);
+  const grams = (t) => { const g = []; for (let i = 0; i < t.length - 1; i++) g.push(t.slice(i, i + 2)); return g; };
+  const dice = (a, b) => { const A = grams(a), B = grams(b); if (!A.length || !B.length) return 0; const m = new Map(); A.forEach((x) => m.set(x, (m.get(x) || 0) + 1)); let c = 0; B.forEach((x) => { if (m.get(x) > 0) { c++; m.set(x, m.get(x) - 1); } }); return (2 * c) / (A.length + B.length); };
+  let best = null, bestScore = 0;
+  for (const l of lines) {
+    const q = squash(l);
+    if (q === n) return name; // already verbatim as a line
+    const score = q.includes(n) && q.endsWith(n) ? 0.9 : dice(n, q);
+    if (score > bestScore) { bestScore = score; best = l; }
+  }
+  return best && bestScore >= 0.5 ? best.slice(0, 80) : name;
+}
+
 export async function onRequestPost({ request, env }) {
   if (!env.NEBIUS_API_KEY) return json({ error: 'not_configured' }, 503);
 
@@ -173,7 +192,7 @@ export async function onRequestPost({ request, env }) {
       ...kinds.map((k) => `- ${k} = ${KIND_DESC[k]}`),
       'Reply with ONE JSON object and nothing else:',
       `Today is ${today}.`,
-      '{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "notes": "see rules", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
+      '{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<the proper name exactly as written in the text, never reworded or shortened>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "notes": "see rules", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
       'Rules: never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5.',
       '"purpose": "remind" = time-bound things that only need a nudge when the time comes (events, deadlines, appointments, birthdays); "review" = knowledge or inspiration worth remembering and revisiting (a quote, a book passage, lecture notes, a key idea); "none" = just storing it (a place, something to buy, a link). Never choose "review" for an event or a deadline.',
       '"notes": useful facts worth keeping about the thing (opening hours, payment method, what to order, tips), one fact per line, max 240 characters, no app or screen text such as ratings widgets, buttons or clock; empty if none.',
@@ -208,6 +227,7 @@ export async function onRequestPost({ request, env }) {
     });
     const rawItems = Array.isArray(parsed.items) ? parsed.items.filter((x) => x && typeof x === 'object').slice(0, 6) : [parsed];
     const items = (rawItems.length ? rawItems : [parsed]).map(shape);
+    if (items.length === 1) items[0].name = snapName(items[0].name, text, items[0].kind);
     let verify;
     if (env.TAVILY_API_KEY && items.length === 1 && VERIFY_KINDS.includes(items[0].kind) && items[0].name) {
       try { verify = await withTimeout(verifyOnline(env, items[0], lang, today), 9000); } catch { verify = undefined; }
