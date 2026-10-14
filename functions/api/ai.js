@@ -26,7 +26,7 @@ const KIND_DESC = {
 
 const MAX_TEXT = 4000;
 const MAX_IMAGE_CHARS = 4_500_000; // ~3.3 MB of base64
-const PER_IP_PER_HOUR = 20;
+const PER_IP_PER_HOUR = 40;
 const hits = new Map(); // best-effort, per isolate
 
 function json(body, status = 200) {
@@ -46,11 +46,19 @@ function limited(ip, cap) {
 }
 
 async function chat(env, model, messages, opts = {}) {
-  const res = await fetch(BASE_URL + 'chat/completions', {
+  const { quick, ...rest } = opts;
+  const send = (extra) => fetch(BASE_URL + 'chat/completions', {
     method: 'POST',
     headers: { 'content-type': 'application/json', authorization: 'Bearer ' + env.NEBIUS_API_KEY },
-    body: JSON.stringify({ model, messages, temperature: 0.1, max_tokens: 2048, ...opts }),
+    body: JSON.stringify({ model, messages, temperature: 0.1, max_tokens: 2048, ...rest, ...extra }),
   });
+  // "quick" turns off the model's long chain of thought (much faster for simple extraction). If the endpoint
+  // rejects the flag we silently retry without it. Set AI_THINKING=1 to turn thinking back on everywhere.
+  let res;
+  if (quick && env.AI_THINKING !== '1') {
+    res = await send({ chat_template_kwargs: { enable_thinking: false } });
+    if (res.status === 400 || res.status === 422) res = await send({});
+  } else res = await send({});
   if (!res.ok) throw new Error('upstream ' + res.status);
   const data = await res.json();
   return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
@@ -166,7 +174,7 @@ async function verifyOnline(env, item, lang, today) {
   const out = await chat(env, TEXT_MODEL, [
     { role: 'system', content: sys },
     { role: 'user', content: 'Saved details: ' + JSON.stringify(claim) + '\nSnippets:\n' + results.map((r, i) => `[${i}] ${r.title}\n${r.content}`).join('\n\n') },
-  ], { max_tokens: 3000 });
+  ], { max_tokens: 3000, quick: true });
   let v;
   try { v = extractJson(out); } catch (e) { throw new Error('nojson:' + String(out).replace(/<think>[\s\S]*?(<\/think>|$)/g, '').replace(/\s+/g, ' ').trim().slice(0, 70) + (/<think>/.test(out) && !/<\/think>/.test(out) ? ' [cut during thinking]' : '')); }
   const idx = Number(v.source);
@@ -208,6 +216,7 @@ function snapName(name, text, kind) {
 }
 
 export async function onRequestPost({ request, env }) {
+  const startedAt = Date.now();
   if (!env.NEBIUS_API_KEY) return json({ error: 'not_configured' }, 503);
 
   const ip = request.headers.get('cf-connecting-ip') || 'x';
@@ -215,6 +224,26 @@ export async function onRequestPost({ request, env }) {
 
   let body;
   try { body = await request.json(); } catch { return json({ error: 'bad_request' }, 400); }
+
+  const today0 = /^\d{4}-\d{2}-\d{2}$/.test(body.today || '') ? body.today : new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10);
+  if (body.mode === 'verify') {
+    // Second, separate request: the page shows the sorted card first and fills this in when it arrives.
+    const it = body.item && typeof body.item === 'object' ? body.item : {};
+    const s2 = (v, n) => (typeof v === 'string' ? v.slice(0, n) : '');
+    const item = { kind: s2(it.kind, 2), name: s2(it.name, 80), place: s2(it.place, 120), date: s2(it.date, 10), time: s2(it.time, 5), deadline: s2(it.deadline, 10) };
+    const lang2 = body.lang === 'en' ? 'en' : 'zh';
+    if (!VERIFY_KINDS.includes(item.kind) || !item.name) return json({ verify_why: 'skipped' });
+    if (!env.TAVILY_API_KEY) return json({ verify_why: 'no_key' });
+    const t0 = Date.now();
+    try {
+      const v = await withTimeout(verifyOnline(env, item, lang2, today0), 20000);
+      if (!v) return json({ verify_why: 'no_results', ms: Date.now() - t0 });
+      if (v.status === 'unverified') return json({ verify_why: v.why || 'unverified', ms: Date.now() - t0 });
+      return json({ verify: v, ms: Date.now() - t0 });
+    } catch (e) {
+      return json({ verify_why: String((e && e.message) || e).slice(0, 40), ms: Date.now() - t0 });
+    }
+  }
 
   let text = typeof body.text === 'string' ? body.text.slice(0, MAX_TEXT) : '';
   const image = typeof body.image === 'string' ? body.image : '';
@@ -260,7 +289,7 @@ export async function onRequestPost({ request, env }) {
     const out = await chat(env, TEXT_MODEL, [
       { role: 'system', content: system },
       { role: 'user', content: text },
-    ], { max_tokens: 4096 });
+    ], { max_tokens: 4096, quick: true });
 
     const parsed = extractJson(out);
     const str = (v, n) => (typeof v === 'string' ? v.slice(0, n) : '');
@@ -289,7 +318,7 @@ export async function onRequestPost({ request, env }) {
       it.name = snapName(it.name, text, it.kind);
     }
     let verify, verifyWhy = '';
-    if (items.length === 1 && VERIFY_KINDS.includes(items[0].kind) && items[0].name) {
+    if (body.verify !== false && items.length === 1 && VERIFY_KINDS.includes(items[0].kind) && items[0].name) {
       if (!env.TAVILY_API_KEY) verifyWhy = 'no_key';
       else {
         try { verify = await withTimeout(verifyOnline(env, items[0], lang, today), 16000); if (!verify) verifyWhy = 'no_results'; else if (verify.status === 'unverified') { verifyWhy = verify.why || 'unverified'; verify = undefined; } }
@@ -301,6 +330,7 @@ export async function onRequestPost({ request, env }) {
       ...(verify ? { verify } : {}),
       ...(verifyWhy ? { verify_why: verifyWhy } : {}),
       ...(items.length > 1 ? { items } : {}),
+      ms: Date.now() - startedAt,
       transcript: transcript ? transcript.slice(0, MAX_TEXT) : '',
       models: (image ? [VISION_MODEL, TEXT_MODEL] : [TEXT_MODEL]).concat(verify ? ['Tavily'] : []),
     });
