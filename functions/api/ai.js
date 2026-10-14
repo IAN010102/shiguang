@@ -112,7 +112,7 @@ async function verifyOnline(env, item, lang, today) {
   const out = await chat(env, TEXT_MODEL, [
     { role: 'system', content: sys },
     { role: 'user', content: 'Saved details: ' + JSON.stringify(claim) + '\nSnippets:\n' + results.map((r, i) => `[${i}] ${r.title}\n${r.content}`).join('\n\n') },
-  ], { max_tokens: 700 });
+  ], { max_tokens: 3000 });
   const v = extractJson(out);
   const idx = Number(v.source);
   const src = Number.isInteger(idx) && idx >= 0 && idx < results.length ? results[idx] : null;
@@ -237,7 +237,7 @@ export async function onRequestPost({ request, env }) {
     if (items.length === 1 && VERIFY_KINDS.includes(items[0].kind) && items[0].name) {
       if (!env.TAVILY_API_KEY) verifyWhy = 'no_key';
       else {
-        try { verify = await withTimeout(verifyOnline(env, items[0], lang, today), 9000); if (!verify) verifyWhy = 'no_results'; else if (verify.status === 'unverified') { verifyWhy = verify.why || 'unverified'; verify = undefined; } }
+        try { verify = await withTimeout(verifyOnline(env, items[0], lang, today), 16000); if (!verify) verifyWhy = 'no_results'; else if (verify.status === 'unverified') { verifyWhy = verify.why || 'unverified'; verify = undefined; } }
         catch (e) { verify = undefined; verifyWhy = String((e && e.message) || e).slice(0, 40); }
       }
     }
