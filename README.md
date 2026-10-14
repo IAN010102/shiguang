@@ -62,9 +62,15 @@ Deploy: connect the repo to Cloudflare Pages (no build step, output directory `/
 
 Without a key the app still works with rule-based sorting.
 
-## Updates during the Submission Period
+## Where NVIDIA Nemotron and Nebius Token Factory are used
 
-The app existed before the hackathon (rule-based keyword sorting, local storage only). New during the period:
+- **NVIDIA Nemotron** (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`) makes every sorting decision: which tab, which fields, the next step, the notes, the study summary and the recall question, and (for non-address claims) the online fact-check comparison.
+- **Nebius Token Factory** serves both models through its OpenAI-compatible `chat/completions` endpoint, from a Cloudflare Pages Function at runtime (not at build time). The same endpoint serves the vision model that reads screenshots (`zai-org/GLM-5.3-Flash`).
+- **Tavily** is called at runtime from the same function to search the web for cafés, places and events (see "Agent behaviours").
+
+## Timeline
+
+The project was started during the Submission Period (early September 2026). The rule-based version of the app was first deployed on October 9. Since October 13 the AI layer was added on top of it:
 
 - The AI pipeline above, including screenshot input and field extraction with uncertainty flags
 - Online verification with sources, and splitting one image into several event cards
