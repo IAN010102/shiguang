@@ -1343,7 +1343,9 @@ details.more[open]>summary{ border-style:solid; }
     return o;
   }
   var first=!load();
-  var S=migrate(load()||seed('zh'));
+  /* first visit: follow the browser language (Chinese stays Chinese, everything else gets English) */
+  var initLang=(function(){ try{ var l=((navigator.languages&&navigator.languages[0])||navigator.language||'zh').toLowerCase(); return l.indexOf('zh')===0?'zh':'en'; }catch(e){ return 'zh'; } })();
+  var S=migrate(load()||seed(initLang));
   lang=S.set.lang;
 
   var tab='q', F={q:{s:'all',t:''},c:{s:'all',t:''},e:{s:'all',t:''},r:{s:'all',t:''},w:{s:'all',t:''},b:{s:'all',t:''},p:{s:'all',t:''},i:{s:'all',t:''},l:{s:'all',t:''},a:{s:'all',t:''},t:{s:'all',t:''},o:{s:'all',t:''},g:{s:'all',t:''}}, search='', sheet=null, sheetTok=0, undoFn=null, armReset=false;
