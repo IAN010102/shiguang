@@ -4339,14 +4339,14 @@ details.more[open]>summary{ border-style:solid; }
       case 'addManual': { closeSheet(function(){ act(tab==='d'?'quick':'add'); }); break; }
       case 'ai': { if(!sheet) openSmart(''); break; }
       case 'smartGo': {
-        syncDraft(); var sd=sheet.d; if(sd.res){ sd.aiName=sd.res.name||''; sd.ai=sd.res.ai?{name:sd.res.name,date:sd.res.date,time:sd.res.time,place:sd.res.place,deadline:sd.res.deadline,how_to:sd.res.how_to,next_step:sd.res.next_step,uncertain:sd.res.uncertain,purpose:sd.res.purpose,summary:sd.res.summary,recall_q:sd.res.recall_q,recall_a:sd.res.recall_a,verify:(sd.res.verify&&sd.res.verify.source)?sd.res.verify:undefined,at:Date.now()}:null; if(!sd.text.trim()) sd.text=sd.res.name||''; } var txt=sd.text.trim(); if(!txt){ toast(t('needText')); return; }
+        syncDraft(); var sd=sheet.d; if(sd.res){ sd.aiName=sd.res.name||''; sd.ai=sd.res.ai?{name:sd.res.name,date:sd.res.date,time:sd.res.time,place:sd.res.place,deadline:sd.res.deadline,how_to:sd.res.how_to,next_step:sd.res.next_step,notes:sd.res.notes,uncertain:sd.res.uncertain,purpose:sd.res.purpose,summary:sd.res.summary,recall_q:sd.res.recall_q,recall_a:sd.res.recall_a,verify:(sd.res.verify&&sd.res.verify.source)?sd.res.verify:undefined,at:Date.now()}:null; if(!sd.text.trim()) sd.text=sd.res.name||''; } var txt=sd.text.trim(); if(!txt){ toast(t('needText')); return; }
         var kind=sd.kind; if(kind!==tab){ setTab(kind); }
         if(kind==='q') openQ(null,{text:txt,swap:true});
-        else if(kind==='c') openC(null,{name:(sd.aiName||guessName(txt)),info:txt,swap:true});
+        else if(kind==='c'){ var ac=sd.ai||null, pc={name:(sd.aiName||guessName(txt)),info:(ac&&(ac.notes||ac.place)?(ac.notes||''):txt),swap:true}; if(ac&&ac.place) pc.address=ac.place; openC(null,pc); }
         else if(kind==='e'){ var a0=sd.ai||null, pe={name:(sd.aiName||guessName(txt)),info:txt,swap:true}; if(a0){ if(a0.date) pe.date=a0.date; if(a0.time) pe.time=a0.time; if(a0.place) pe.place=a0.place; pe.ai=a0; } openE(null,pe); }
         else if(kind==='r') openR(null,{name:(sd.aiName||bracketName(txt)),why:txt,swap:true});
         else if(kind==='b') openB(null,{name:(sd.aiName||bracketName(txt)||guessName(txt)),info:txt,swap:true});
-        else if(kind==='p') openP(null,{name:(sd.aiName||guessName(txt)),info:txt,swap:true});
+        else if(kind==='p'){ var ap=sd.ai||null; openP(null,{name:(sd.aiName||guessName(txt)),info:(ap&&ap.notes?ap.notes:txt),swap:true}); }
         else if(kind==='i'){ var ai0=sd.ai||null; if(ai0&&ai0.summary) openI(null,{text:ai0.summary,note:txt.slice(0,800),ai:ai0,swap:true}); else openI(null,{text:txt,ai:ai0,swap:true}); }
         else if(kind==='l') openL(null,{info:txt,swap:true});
         else if(kind==='o') openO(null,{info:txt,swap:true});

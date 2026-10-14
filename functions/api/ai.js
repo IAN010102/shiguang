@@ -159,7 +159,7 @@ export async function onRequestPost({ request, env }) {
       transcript = await chat(env, VISION_MODEL, [{
         role: 'user',
         content: [
-          { type: 'text', text: 'Transcribe all text in this image exactly as written (Chinese and English). Mark anything unclear or hidden as [uncertain]; never guess. Output only the transcription.' },
+          { type: 'text', text: 'Transcribe all text in this image exactly as written (Chinese and English). Ignore the phone status bar (clock, battery, signal), keyboard, and any map or app background around the main content; transcribe only the main card or post. Mark anything unclear or hidden as [uncertain]; never guess. Output only the transcription.' },
           { type: 'image_url', image_url: { url: image } },
         ],
       }], { max_tokens: 2048 });
@@ -173,12 +173,13 @@ export async function onRequestPost({ request, env }) {
       ...kinds.map((k) => `- ${k} = ${KIND_DESC[k]}`),
       'Reply with ONE JSON object and nothing else:',
       `Today is ${today}.`,
-      '{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
+      '{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<short title>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "notes": "see rules", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
       'Rules: never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5.',
       '"purpose": "remind" = time-bound things that only need a nudge when the time comes (events, deadlines, appointments, birthdays); "review" = knowledge or inspiration worth remembering and revisiting (a quote, a book passage, lecture notes, a key idea); "none" = just storing it (a place, something to buy, a link). Never choose "review" for an event or a deadline.',
+      '"notes": useful facts worth keeping about the thing (opening hours, payment method, what to order, tips), one fact per line, max 240 characters, no app or screen text such as ratings widgets, buttons or clock; empty if none.',
       'If purpose is "review" and the content is class/lecture notes or a long passage: "summary" = concise study notes in the content language, max 500 characters, single line breaks only, no blank lines; otherwise "summary" is empty. If purpose is "review": "recall_q" = one question that tests the key idea, "recall_a" = a short answer taken from the content; otherwise both empty.',
       'If the content clearly holds several separate things (for example a list or poster of several different events), reply {"items": [object, ...]} with at most 6 objects of the shape above, one per thing; otherwise reply with a single object. Never split one thing\'s details (its date, place, deadline) into several items.',
-      lang === 'en' ? 'Write name, how_to, next_step, summary, recall_q and recall_a in English.' : 'name、how_to、next_step、summary、recall_q、recall_a 請用繁體中文書寫。',
+      lang === 'en' ? 'Write name, how_to, next_step, notes, summary, recall_q and recall_a in English.' : 'name、how_to、next_step、notes、summary、recall_q、recall_a 請用繁體中文書寫。',
     ].join('\n');
 
     const out = await chat(env, TEXT_MODEL, [
@@ -194,6 +195,7 @@ export async function onRequestPost({ request, env }) {
       name: str(r.name, 80),
       time: /^([01]\d|2[0-3]):[0-5]\d$/.test(r.time || '') ? r.time : '',
       purpose: ['remind', 'review', 'none'].includes(r.purpose) ? r.purpose : 'none',
+      notes: str(r.notes, 300).replace(/\n\s*\n/g, '\n'),
       summary: str(r.summary, 600).replace(/\n\s*\n/g, '\n'),
       recall_q: str(r.recall_q, 200),
       recall_a: str(r.recall_a, 300),
