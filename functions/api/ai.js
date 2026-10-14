@@ -129,6 +129,7 @@ export async function onRequestPost({ request, env }) {
       'Rules: never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5.',
       '"purpose": "remind" = time-bound things that only need a nudge when the time comes (events, deadlines, appointments, birthdays); "review" = knowledge or inspiration worth remembering and revisiting (a quote, a book passage, lecture notes, a key idea); "none" = just storing it (a place, something to buy, a link). Never choose "review" for an event or a deadline.',
       'If purpose is "review" and the content is class/lecture notes or a long passage: "summary" = concise study notes in the content language, max 500 characters, single line breaks only, no blank lines; otherwise "summary" is empty. If purpose is "review": "recall_q" = one question that tests the key idea, "recall_a" = a short answer taken from the content; otherwise both empty.',
+      'If the content clearly holds several separate things (for example a list or poster of several different events), reply {"items": [object, ...]} with at most 6 objects of the shape above, one per thing; otherwise reply with a single object. Never split one thing\'s details (its date, place, deadline) into several items.',
       lang === 'en' ? 'Write name, how_to, next_step, summary, recall_q and recall_a in English.' : 'name、how_to、next_step、summary、recall_q、recall_a 請用繁體中文書寫。',
     ].join('\n');
 
@@ -137,11 +138,10 @@ export async function onRequestPost({ request, env }) {
       { role: 'user', content: text },
     ], { max_tokens: 4096 });
 
-    const r = extractJson(out);
-    const kind = kinds.includes(r.kind) ? r.kind : kinds[0];
+    const parsed = extractJson(out);
     const str = (v, n) => (typeof v === 'string' ? v.slice(0, n) : '');
-    return json({
-      kind,
+    const shape = (r) => ({
+      kind: kinds.includes(r.kind) ? r.kind : kinds[0],
       confidence: Math.max(0, Math.min(1, Number(r.confidence) || 0)),
       name: str(r.name, 80),
       time: /^([01]\d|2[0-3]):[0-5]\d$/.test(r.time || '') ? r.time : '',
@@ -155,6 +155,12 @@ export async function onRequestPost({ request, env }) {
       how_to: str(r.how_to, 300),
       next_step: str(r.next_step, 300),
       uncertain: Array.isArray(r.uncertain) ? r.uncertain.slice(0, 8).map((x) => str(String(x), 60)) : [],
+    });
+    const rawItems = Array.isArray(parsed.items) ? parsed.items.filter((x) => x && typeof x === 'object').slice(0, 6) : [parsed];
+    const items = (rawItems.length ? rawItems : [parsed]).map(shape);
+    return json({
+      ...items[0],
+      ...(items.length > 1 ? { items } : {}),
       transcript: transcript ? transcript.slice(0, MAX_TEXT) : '',
       models: image ? [VISION_MODEL, TEXT_MODEL] : [TEXT_MODEL],
     });
