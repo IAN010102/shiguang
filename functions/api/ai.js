@@ -312,6 +312,7 @@ export async function onRequestPost({ request, env }) {
     });
     const rawItems = Array.isArray(parsed.items) ? parsed.items.filter((x) => x && typeof x === 'object').slice(0, 6) : [parsed];
     const items = (rawItems.length ? rawItems : [parsed]).map(shape);
+    items.forEach((x) => { if (x.kind === 'q') x.summary = ''; }); // a quote stays as the user's own words
     if (items.length === 1) {
       const it = items[0];
       if (it.kind === 'p' && kinds.includes('c') && /咖啡|cafe|café|coffee|茶|烘焙|bakery|早午餐|brunch|餐廳|restaurant/i.test(it.name + ' ' + text.slice(0, 200))) it.kind = 'c';
