@@ -84,6 +84,54 @@ function extractJson(s) {
   try { return JSON.parse(body); } catch { return JSON.parse(escapeControlInStrings(body)); }
 }
 
+// Optional stage 3: look the item up on the web with Tavily and let the model compare.
+// It only reports what a quoted snippet supports; anything else is dropped. Failure never breaks the main result.
+const VERIFY_KINDS = ['e', 'c', 'o', 'p'];
+function withTimeout(p, ms) {
+  return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+}
+async function verifyOnline(env, item, lang, today) {
+  const q = [item.name, item.place].filter(Boolean).join(' ').slice(0, 200);
+  const res = await fetch('https://api.tavily.com/search', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: 'Bearer ' + env.TAVILY_API_KEY },
+    body: JSON.stringify({ query: q, search_depth: 'basic', max_results: 4, include_answer: false }),
+  });
+  if (!res.ok) throw new Error('tavily ' + res.status);
+  const data = await res.json();
+  const results = (data.results || []).filter((r) => r && r.url && r.content).slice(0, 4)
+    .map((r) => ({ title: String(r.title || '').slice(0, 120), url: String(r.url), content: String(r.content).slice(0, 700) }));
+  if (!results.length) return null;
+  const claim = { name: item.name, date: item.date, time: item.time, place: item.place, deadline: item.deadline };
+  const sys = [
+    'You fact-check details a user saved against web search snippets. Today is ' + today + '.',
+    'Reply with ONE JSON object only: {"status": "confirmed | conflict | unverified", "source": <index of the snippet used, or -1>, "evidence": "<exact short quote copied from that snippet, max 160 chars, or empty>", "note": "<one short sentence about what matches or differs>", "suggest": {"date": "", "deadline": "", "place": ""}}',
+    '"confirmed" = a snippet states the same event/place with matching details. "conflict" = a snippet clearly states a different date, deadline or place for the same thing; put the snippet\'s value in "suggest". "unverified" = snippets do not mention it or are about something else. Never guess; when unsure choose "unverified". "evidence" must be copied verbatim from the snippet.',
+    lang === 'en' ? 'Write "note" in English.' : '"note" 請用繁體中文書寫。',
+  ].join('\n');
+  const out = await chat(env, TEXT_MODEL, [
+    { role: 'system', content: sys },
+    { role: 'user', content: 'Saved details: ' + JSON.stringify(claim) + '\nSnippets:\n' + results.map((r, i) => `[${i}] ${r.title}\n${r.content}`).join('\n\n') },
+  ], { max_tokens: 700 });
+  const v = extractJson(out);
+  const idx = Number(v.source);
+  const src = Number.isInteger(idx) && idx >= 0 && idx < results.length ? results[idx] : null;
+  const ev = typeof v.evidence === 'string' ? v.evidence.trim() : '';
+  const norm = (t) => String(t).replace(/\s+/g, ' ').toLowerCase();
+  const quoted = src && ev.length >= 6 && norm(src.content + ' ' + src.title).includes(norm(ev));
+  if (!['confirmed', 'conflict'].includes(v.status) || !quoted) return { status: 'unverified', checked: results.length };
+  const sg = v.suggest && typeof v.suggest === 'object' ? v.suggest : {};
+  const dOk = (x) => (/^\d{4}-\d{2}-\d{2}$/.test(x || '') ? x : '');
+  return {
+    status: v.status,
+    note: typeof v.note === 'string' ? v.note.slice(0, 200) : '',
+    evidence: ev.slice(0, 160),
+    source: { title: src.title, url: src.url },
+    suggest: v.status === 'conflict' ? { date: dOk(sg.date), deadline: dOk(sg.deadline), place: typeof sg.place === 'string' ? sg.place.slice(0, 120) : '' } : undefined,
+    checked: results.length,
+  };
+}
+
 export async function onRequestPost({ request, env }) {
   if (!env.NEBIUS_API_KEY) return json({ error: 'not_configured' }, 503);
 
@@ -158,11 +206,16 @@ export async function onRequestPost({ request, env }) {
     });
     const rawItems = Array.isArray(parsed.items) ? parsed.items.filter((x) => x && typeof x === 'object').slice(0, 6) : [parsed];
     const items = (rawItems.length ? rawItems : [parsed]).map(shape);
+    let verify;
+    if (env.TAVILY_API_KEY && items.length === 1 && VERIFY_KINDS.includes(items[0].kind) && items[0].name) {
+      try { verify = await withTimeout(verifyOnline(env, items[0], lang, today), 9000); } catch { verify = undefined; }
+    }
     return json({
       ...items[0],
+      ...(verify ? { verify } : {}),
       ...(items.length > 1 ? { items } : {}),
       transcript: transcript ? transcript.slice(0, MAX_TEXT) : '',
-      models: image ? [VISION_MODEL, TEXT_MODEL] : [TEXT_MODEL],
+      models: (image ? [VISION_MODEL, TEXT_MODEL] : [TEXT_MODEL]).concat(verify ? ['Tavily'] : []),
     });
   } catch (e) {
     return json({ error: 'ai_failed', detail: String((e && e.message) || e).slice(0, 120) }, 502);
