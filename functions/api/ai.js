@@ -10,12 +10,12 @@ const TEXT_MODEL = 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B';
 
 const KIND_DESC = {
   q: 'quotes: a sentence or line worth keeping',
-  c: 'cafes: a cafe, restaurant or shop to visit',
+  c: 'cafes: any cafe, coffee shop, tea shop, bakery, brunch spot or restaurant to visit (also when the name contains words like cafe, coffee, 咖啡, 茶, 餐)',
   e: 'events: a concert, exhibition, market, talk or workshop with a date',
   r: 'recs: something someone recommends (a show, song, game, video)',
   w: 'wishes: something to buy, with a price or shop link',
   b: 'books: a book, with author or pages',
-  p: 'places: a non-food place to visit (park, trail, attraction)',
+  p: 'places: a place to visit that is NOT a food or drink venue (park, trail, attraction, shop)',
   i: 'ideas: the user\'s own idea or note',
   l: 'links: a bare link to read later',
   a: 'dates: a birthday, anniversary or recurring date',
@@ -119,7 +119,8 @@ async function verifyOnline(env, item, lang, today) {
   const ev = typeof v.evidence === 'string' ? v.evidence.trim() : '';
   const norm = (t) => String(t).replace(/\s+/g, ' ').toLowerCase();
   const quoted = src && ev.length >= 6 && norm(src.content + ' ' + src.title).includes(norm(ev));
-  if (!['confirmed', 'conflict'].includes(v.status) || !quoted) return { status: 'unverified', checked: results.length };
+  if (!['confirmed', 'conflict'].includes(v.status)) return { status: 'unverified', why: 'model_unsure', checked: results.length };
+  if (!quoted) return { status: 'unverified', why: 'no_quote', checked: results.length };
   const sg = v.suggest && typeof v.suggest === 'object' ? v.suggest : {};
   const dOk = (x) => (/^\d{4}-\d{2}-\d{2}$/.test(x || '') ? x : '');
   return {
@@ -227,14 +228,23 @@ export async function onRequestPost({ request, env }) {
     });
     const rawItems = Array.isArray(parsed.items) ? parsed.items.filter((x) => x && typeof x === 'object').slice(0, 6) : [parsed];
     const items = (rawItems.length ? rawItems : [parsed]).map(shape);
-    if (items.length === 1) items[0].name = snapName(items[0].name, text, items[0].kind);
-    let verify;
-    if (env.TAVILY_API_KEY && items.length === 1 && VERIFY_KINDS.includes(items[0].kind) && items[0].name) {
-      try { verify = await withTimeout(verifyOnline(env, items[0], lang, today), 9000); } catch { verify = undefined; }
+    if (items.length === 1) {
+      const it = items[0];
+      if (it.kind === 'p' && kinds.includes('c') && /咖啡|cafe|café|coffee|茶|烘焙|bakery|早午餐|brunch|餐廳|restaurant/i.test(it.name + ' ' + text.slice(0, 200))) it.kind = 'c';
+      it.name = snapName(it.name, text, it.kind);
+    }
+    let verify, verifyWhy = '';
+    if (items.length === 1 && VERIFY_KINDS.includes(items[0].kind) && items[0].name) {
+      if (!env.TAVILY_API_KEY) verifyWhy = 'no_key';
+      else {
+        try { verify = await withTimeout(verifyOnline(env, items[0], lang, today), 9000); if (!verify) verifyWhy = 'no_results'; else if (verify.status === 'unverified') { verifyWhy = verify.why || 'unverified'; verify = undefined; } }
+        catch (e) { verify = undefined; verifyWhy = String((e && e.message) || e).slice(0, 40); }
+      }
     }
     return json({
       ...items[0],
       ...(verify ? { verify } : {}),
+      ...(verifyWhy ? { verify_why: verifyWhy } : {}),
       ...(items.length > 1 ? { items } : {}),
       transcript: transcript ? transcript.slice(0, MAX_TEXT) : '',
       models: (image ? [VISION_MODEL, TEXT_MODEL] : [TEXT_MODEL]).concat(verify ? ['Tavily'] : []),
