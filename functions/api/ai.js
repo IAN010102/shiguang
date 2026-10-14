@@ -90,6 +90,35 @@ const VERIFY_KINDS = ['e', 'c', 'o', 'p'];
 function withTimeout(p, ms) {
   return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
 }
+// Deterministic address check for Taiwan addresses: no model involved, so a wrong address cannot slip through.
+const TW_ADDR = /(?:\d{3}\s*)?(?:臺北|台北|新北|桃園|臺中|台中|臺南|台南|高雄|基隆|新竹|嘉義|宜蘭|花蓮|臺東|台東|苗栗|彰化|南投|雲林|屏東|澎湖|金門|連江)[市縣]\s*([^\s,，。；;、]{1,6}?[區鄉鎮市])\s*([^\s,，。；;、]{0,12}?[路街道段][^\s,，。；;、]{0,10}?)\s*(\d+(?:之\d+)?(?:-\d+)?)\s*號/g;
+const sq = (t) => String(t).replace(/\s+/g, '').replace(/臺/g, '台').toLowerCase();
+function addressCheck(item, results, lang) {
+  const N = lang === 'en' ? { ok: 'Address matches', diff: 'Address differs from what you saved' } : { ok: '地址與你存的相符', diff: '網路上的地址和你存的不同' };
+  if (!['c', 'p'].includes(item.kind) || !item.place || !item.name) return null;
+  const claim = [...String(item.place).matchAll(TW_ADDR)][0];
+  if (!claim) return null;
+  const key = (m) => sq(m[2]) + '|' + sq(m[3]);
+  const claimKey = key(claim), claimDistrict = sq(claim[1]);
+  const name = sq(item.name);
+  let firstOther = null;
+  for (const r of results) {
+    const body = r.title + ' ' + r.content;
+    if (!sq(body).includes(name)) continue; // only trust pages that name this exact shop
+    for (const m of body.matchAll(TW_ADDR)) {
+      if (key(m) === claimKey && sq(m[1]) === claimDistrict) {
+        return { status: 'confirmed', note: N.ok, evidence: m[0].trim().slice(0, 160), source: { title: r.title, url: r.url } };
+      }
+      if (!firstOther) firstOther = { m, r };
+    }
+  }
+  if (firstOther) {
+    const { m, r } = firstOther;
+    return { status: 'conflict', note: N.diff, evidence: m[0].trim().slice(0, 160), source: { title: r.title, url: r.url }, suggest: { date: '', deadline: '', place: m[0].replace(/^\d{3}\s*/, '').trim().slice(0, 120) } };
+  }
+  return null;
+}
+
 async function verifyOnline(env, item, lang, today) {
   const q = [item.name, item.place].filter(Boolean).join(' ').slice(0, 200);
   const res = await fetch('https://api.tavily.com/search', {
@@ -102,6 +131,8 @@ async function verifyOnline(env, item, lang, today) {
   const results = (data.results || []).filter((r) => r && r.url && r.content).slice(0, 4)
     .map((r) => ({ title: String(r.title || '').slice(0, 120), url: String(r.url), content: String(r.content).slice(0, 700) }));
   if (!results.length) return null;
+  const det = addressCheck(item, results, lang);
+  if (det) return { ...det, checked: results.length };
   const claim = { name: item.name, date: item.date, time: item.time, place: item.place, deadline: item.deadline };
   const sys = [
     'You fact-check details a user saved against web search snippets. Today is ' + today + '.',
