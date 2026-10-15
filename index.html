@@ -543,6 +543,17 @@ html[lang="en"] .pad textarea{ font-family:Georgia,"Times New Roman",serif; }
 .acc summary::after{ content:'＋'; color:var(--ink2); }
 .acc[open] summary::after{ content:'－'; }
 .acc .inner{ padding:0 0 12px; }
+.acc.card{ margin:14px 0; border:2px solid var(--ink); border-left:9px solid var(--c); border-radius:18px; background:var(--sheet); box-shadow:4px 5px 0 rgba(0,51,102,.16); transition:box-shadow .2s ease, transform .2s ease; }
+.acc.card[open]{ box-shadow:5px 7px 0 rgba(0,51,102,.22); }
+.acc.card summary{ padding:13px 16px 13px 14px; gap:10px; }
+.acc.card summary::after{ content:'›'; font-size:1.5rem; line-height:1; color:var(--ink2); transition:transform .25s ease; }
+.acc.card[open] summary::after{ content:'›'; transform:rotate(90deg); }
+.acc.card .at b{ display:block; font-weight:400; font-size:1.125rem; }
+.acc.card .at small{ display:block; margin-top:1px; color:var(--ink2); font-size:max(12px,.8125rem); }
+.acc.card .inner{ padding:0 16px 14px 14px; }
+.acc.card[open] .inner{ animation:accIn .28s ease; }
+@keyframes accIn{ from{ opacity:0; transform:translateY(-8px); } to{ opacity:1; transform:none; } }
+html[data-motion="reduce"] .acc.card[open] .inner{ animation:none; }
 .about{ text-align:center; color:var(--ink2); font-size:max(12px,0.8125rem); margin:22px 0 0; }
 
 .toast{
@@ -777,7 +788,7 @@ details.more[open]>summary{ border-style:solid; }
     checkedIn:function(n){return '打卡成功，共 '+n+' 次'}, markedBeen:'已標為去過', restored:'已還原', badBackup:'備份內容看不懂，請確認完整貼上', needBackup:'先貼上備份內容',
     sampleCleared:'已清除範例', wiped:'已清空', sample:'範例', sampleC:'範例咖啡廳（可刪除）', sampleE:'範例：週末市集（可刪除）', sampleAddr:'台北市中正區範例路 1 號', sampleCInfo:'週二公休\n有插座、適合待一下午\n必點：手沖', sampleEPrice:'免費入場',
     drawQT:'抽到這一張', drawCT:'今天去這間',
-    setTitle:'設定',setGLook:'外觀與語言',setGTabs:'分頁',setGHabit:'提醒與習慣',setGData:'資料與備份', secLang:'語言 Language', secLook:'深淺色', themeAuto:'跟隨系統', themeLight:'淺色', themeDark:'深色', secMotion:'動畫', introOn:'入場動畫', reduceMotion:'減少動態效果', replay:'再看一次入場動畫',
+    setTitle:'設定',setGLook:'外觀與語言', setGLookD:'深淺色、字體大小、動畫', setGTabsD:'要顯示哪些分頁', setGHabitD:'冷靜期、貨幣、提醒', setGCatsD:'每個分頁的標籤，改名、換顏色', setGDataD:'備份、匯入、還原',setGTabs:'分頁',setGHabit:'提醒與習慣',setGData:'資料與備份', secLang:'語言 Language', secLook:'深淺色', themeAuto:'跟隨系統', themeLight:'淺色', themeDark:'深色', secMotion:'動畫', introOn:'入場動畫', reduceMotion:'減少動態效果', replay:'再看一次入場動畫',
     secCats:'分類管理', catsQ:'句子分類', catsC:'咖啡廳標籤', catsE:'活動標籤', newQ:'新增句子分類', newC:'新增咖啡廳標籤', newE:'新增活動標籤',
     secData:'資料', backup:'複製備份', restoreLabel:'還原（貼上備份內容）', restorePh:'貼上之前複製的備份', restore:'還原', exportMd:'複製成 Markdown（貼到 Notion）', clearSample:'清除範例資料', reset:'清空所有資料', resetArm:'再按一次，全部清空',
     dataNote:'資料只存在這個瀏覽器裡。換手機或清除瀏覽資料前，先複製備份。', about:'拾光小本 · 你的資料只在你的裝置上',
@@ -976,7 +987,7 @@ details.more[open]>summary{ border-style:solid; }
     checkedIn:function(n){return 'Checked in. '+n+' total'}, markedBeen:'Marked as been', restored:'Restored', badBackup:'Could not read that backup. Paste the whole thing', needBackup:'Paste a backup first',
     sampleCleared:'Samples cleared', wiped:'Everything cleared', sample:'Sample', sampleC:'Sample Café (delete me)', sampleE:'Sample: Weekend Market (delete me)', sampleAddr:'No. 1 Sample Rd., Taipei', sampleCInfo:'Closed Tuesdays\nPower outlets, good for a long afternoon\nTry: pour-over', sampleEPrice:'Free entry',
     drawQT:'You drew this one', drawCT:'Go here today',
-    setTitle:'Settings',setGLook:'Look & language',setGTabs:'Tabs',setGHabit:'Reminders & habits',setGData:'Data & backup', secLang:'Language 語言', secLook:'Light or dark', themeAuto:'System', themeLight:'Light', themeDark:'Dark', secMotion:'Motion', introOn:'Entrance animation', reduceMotion:'Reduce motion', replay:'Replay entrance animation',
+    setTitle:'Settings',setGLook:'Look & language', setGLookD:'Light or dark, text size, motion', setGTabsD:'Which tabs to show', setGHabitD:'Cooling-off, currency, reminders', setGCatsD:'Tags for each tab: rename, recolour', setGDataD:'Backup, import, restore',setGTabs:'Tabs',setGHabit:'Reminders & habits',setGData:'Data & backup', secLang:'Language 語言', secLook:'Light or dark', themeAuto:'System', themeLight:'Light', themeDark:'Dark', secMotion:'Motion', introOn:'Entrance animation', reduceMotion:'Reduce motion', replay:'Replay entrance animation',
     secCats:'Categories', catsQ:'Quote categories', catsC:'Café tags', catsE:'Event tags', newQ:'New quote category', newC:'New café tag', newE:'New event tag',
     secData:'Data', backup:'Copy backup', restoreLabel:'Restore (paste a backup)', restorePh:'Paste a backup you copied earlier', restore:'Restore', exportMd:'Copy as Markdown (paste into Notion)', clearSample:'Clear sample data', reset:'Erase all data', resetArm:'Tap again to erase everything',
     dataNote:'Your data lives only in this browser. Copy a backup before switching phones or clearing browsing data.', about:'Little Finds · your data stays on your device',
@@ -3012,7 +3023,11 @@ details.more[open]>summary{ border-style:solid; }
 
   /* ---------- sheets: bodies ---------- */
   function lastBackupDays(){ var lb=S.set.lastBackup; return lb?Math.floor((Date.now()-lb)/86400000):null; }
-  function setAcc(key,title,inner){ var open=sheet.open&&sheet.open[key]; return '<details class="acc" data-k="'+key+'"'+(open?' open':'')+'><summary>'+esc(title)+'</summary><div class="inner">'+inner+'</div></details>'; }
+  var ACC_META={g_look:{c:'#4F7297',d:'setGLookD'},g_tabs:{c:'#003366',d:'setGTabsD'},g_habit:{c:'#B44B33',d:'setGHabitD'},g_cats:{c:'#6A4C7C',d:'setGCatsD'},g_data:{c:'#1F7A7A',d:'setGDataD'}};
+  function setAcc(key,title,inner){
+    var open=sheet.open&&sheet.open[key], m=ACC_META[key]||{c:'#5E6B7A',d:''};
+    return '<details class="acc card" data-k="'+key+'" style="--c:'+m.c+'"'+(open?' open':'')+'><summary><span class="at"><b>'+esc(title)+'</b>'+(m.d?'<small>'+esc(t(m.d))+'</small>':'')+'</span></summary><div class="inner">'+inner+'</div></details>';
+  }
   function setBody(){
     var s=S.set, h='<h3>'+t('setTitle')+'</h3>';
     h+='<button class="guidelink" data-act="guide"><span>'+t('guideEntry')+'</span><span>›</span></button>';
