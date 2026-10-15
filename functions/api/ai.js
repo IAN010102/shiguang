@@ -307,7 +307,7 @@ export async function onRequestPost({ request, env }) {
       'If purpose is "review" and the content is class/lecture notes or a long passage: "summary" = concise study notes in the content language, max 500 characters, single line breaks only, no blank lines; otherwise "summary" is empty. If purpose is "review": "recall_q" = one question that tests the key idea, "recall_a" = a short answer taken from the content; otherwise both empty.',
       'If the content clearly holds several separate things (for example a list or poster of several different events), reply {"items": [object, ...]} with at most 6 objects of the shape above, one per thing; otherwise reply with a single object. Never split one thing\'s details (its date, place, deadline) into several items.',
       extra || '',
-      lang === 'en' ? 'Write name, how_to, next_step, notes, summary, recall_q and recall_a in English.' : 'name、how_to、next_step、notes、summary、recall_q、recall_a 請用繁體中文書寫。',
+      lang === 'en' ? 'Write name, how_to, next_step, notes, summary, recall_q and recall_a in English.' : 'name、how_to、next_step、notes、summary、recall_q、recall_a 請用繁體中文書寫，用詞採台灣慣用語（例如「訊號」不寫「信號」、「軟體」不寫「軟件」、「資料」不寫「數據」）。',
     ].filter(Boolean).join('\n');
 
     const out = await chat(env, TEXT_MODEL, [
