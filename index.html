@@ -391,6 +391,34 @@ html[data-motion="reduce"] .holdring::before, html[data-motion="reduce"] .holdri
 .obhead .cnt{ color:var(--ink2); font-size:max(12px,.8125rem); }
 .stickyfoot{ position:sticky; bottom:0; z-index:4; margin:14px -20px calc(-26px - env(safe-area-inset-bottom,0px)); padding:12px 20px calc(16px + env(safe-area-inset-bottom,0px)); background:var(--sheet); border-top:1.5px solid var(--grid); }
 .stickyfoot .btn{ width:100%; text-align:center; }
+/* guided first-run: one question per screen */
+.obq{ text-align:center; padding:4px 2px 0; }
+.obq.fresh{ animation:tipIn .3s ease; }
+.obq .obstep{ color:var(--ink2); font-size:.875rem; letter-spacing:.12em; margin:0; }
+.obq h3{ margin:10px 0 6px; font-size:1.4rem; line-height:1.45; font-weight:400; }
+.obq .sub{ margin:0 0 20px; color:var(--ink2); font-size:.9375rem; line-height:1.6; }
+.obprev{ position:relative; margin:4px auto 0; max-width:300px; text-align:left; padding:16px 18px 14px; border:2px solid var(--ink); border-radius:18px; background:var(--sheet); box-shadow:5px 6px 0 rgba(0,51,102,.2); transform:rotate(-1.2deg); }
+.obprev .eg{ position:absolute; top:-11px; right:14px; padding:0 10px; border:1.5px dashed var(--ink2); border-radius:999px; background:var(--sheet); color:var(--ink2); font-size:max(12px,.75rem); line-height:1.6; }
+.obprev .pt{ margin:0; font-size:1.125rem; line-height:1.55; }
+.obprev .pm{ margin:4px 0 0; color:var(--ink2); font-size:.875rem; }
+.obprev .ptag{ display:inline-block; margin-top:10px; padding:0 11px; border:1.5px solid var(--ink); border-radius:999px; font-size:max(12px,.8125rem); }
+.obprev.note{ background:#8FB8DE; color:#1A1A1A; border-color:#1A1A1A; } .obprev.note .pt{ font-size:1.25rem; } .obprev.note .ptag{ border-color:#1A1A1A; }
+.obchoice{ display:flex; gap:10px; margin-top:26px; }
+.obchoice button{ flex:1; padding:12px 8px; border:1.5px solid rgba(94,107,122,.5); border-radius:16px; font-size:1rem; color:var(--ink); transition:border-color .2s ease, background-color .2s ease, transform .15s ease; }
+.obchoice button:active{ transform:scale(.98); }
+.obchoice button.on{ border-color:var(--ink); background:rgba(0,51,102,.08); }
+.obchoice button.on::before{ content:'✓ '; }
+.obnav{ display:flex; justify-content:space-between; align-items:center; margin-top:22px; min-height:44px; }
+.obnav .btn{ min-width:132px; text-align:center; }
+.obdots{ display:flex; justify-content:center; gap:8px; margin:22px 0 0; }
+.obdots i{ width:7px; height:7px; border-radius:50%; background:var(--grid); transition:background-color .2s ease, transform .2s ease; }
+.obdots i.on{ background:var(--ink); transform:scale(1.35); }
+.obchips{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:16px 0 4px; }
+.obchips span{ display:inline-flex; align-items:center; gap:7px; padding:5px 14px 5px 10px; border:1.5px solid rgba(94,107,122,.5); border-radius:999px; background:var(--sheet); font-size:.9375rem; animation:tipIn .35s ease both; animation-delay:calc(var(--n) * 70ms); }
+.obchips i{ width:9px; height:9px; border-radius:50%; background:var(--c); flex:none; }
+.obq .stampwrap{ padding:6px 0 0; }
+.obq .stampbig{ display:inline-block; border:3px solid var(--stamp); color:var(--stamp); border-radius:12px; padding:2px 22px; font-size:1.75rem; transform:rotate(-7deg); animation:stampIn .45s .15s both; }
+html[data-motion="reduce"] .obq, html[data-motion="reduce"] .obchips span, html[data-motion="reduce"] .obq .stampbig{ animation:none; }
 /* manual: a full-screen, chaptered booklet */
 .sheet.full{ width:min(640px,100%); height:100%; max-height:100%; border-radius:0; padding:0 0 calc(34px + env(safe-area-inset-bottom,0px)); }
 .sheet.full .grabtape{ display:none; }
@@ -790,6 +818,10 @@ details.more[open]>summary{ border-style:solid; }
     a2Setting:'主畫面', a2Preview:'再顯示一次提示卡', a2ios:'iPhone / iPad', a2droid:'Android',
     storeFail:'這個瀏覽器沒辦法儲存資料（可能是私密瀏覽，或儲存空間已滿）。現在的內容重新整理就會消失，請先匯出備份。', storeNear:'儲存空間快滿了，建議先匯出備份，再整理掉不需要的內容。', storeFailToast:'儲存失敗，請先匯出備份',
     obReplay:'重新選擇要用的分頁', obTitle:'你想用來記什麼？', obSub:'選幾個就好，之後隨時可以在設定裡改。', obGo:'開始使用', obAll:'全部都要',
+    obQ1T:'看到喜歡的一句話，會想留下來嗎？', obQ1S:'句子，還有突然冒出來的想法', obQ2T:'有想去的店、想參加的活動嗎？', obQ2S:'咖啡廳、餐廳、市集、演唱會', obQ3T:'有想買的東西、朋友推薦的清單嗎？', obQ3S:'想買的先冷靜幾天，被推薦的記下是誰說的', obQ4T:'有想稍後讀的文章、想讀的書嗎？', obQ4S:'先存著，有空再翻出來',
+    obYes:'會，幫我留著', obNo:'先不用', obNext:'下一步', obBack:'上一步', obEg:'範例', obStep:function(a,b){return a+' / '+b},
+    obP1:'慢慢來，比較快。', obP1t:'學習', obP2:'淡水河岸音樂市集', obP2m:'10/24 週六 · 14:00', obP2p:'淡水漁人碼頭', obP3:'新耳機', obP3m:'冷靜期 7 天，到了再決定', obP4:'週末想讀的那篇文章', obP4m:'還沒看',
+    obDoneT:'你的本子準備好了', obDoneS:'之後想增減分頁，到設定隨時可以改。', obDoneAI:function(l){return '右下角的「'+l+'」是最快的開始：貼上文字或拍張照，我幫你整理。'}, obNone:'還沒選也沒關係，先幫你放了句子、咖啡廳和活動。', obOpen:'翻開本子', obStamp:'開張',
     odQ:'網路上看到、想留下來的話', odC:'想去的店，附地址、IG 和打卡集點', odE:'演唱會、展覽，還有倒數', odR:'朋友說「一定要看」的，記下是誰推薦', odW:'心動的東西，先冷靜幾天再決定',
     shareList:'分享成圖片', shNone:'目前沒有可以分享的內容', shMore:function(n){return '還有 '+n+' 筆…'}, shCountC:function(n){return n+' 間咖啡廳'}, shCountE:function(n){return n+' 場活動'},
     clAll:'我的咖啡廳', clWant:'想去的咖啡廳', clBeen:'去過的咖啡廳', clTag:function(n){return n+'咖啡廳'}, evComing:'接下來的活動',
@@ -840,7 +872,7 @@ details.more[open]>summary{ border-style:solid; }
     guideT_p:'地點', guideB_p:'咖啡廳以外，想去的任何地方——餐廳、景點、店家。\n・跟咖啡廳一樣，貼上地址、地圖連結或 IG 文字會自動抓\n・分想去、去過兩種狀態，去過的可以打星評分',
     guideT_i:'靈感', guideB_i:'先記下來、不強制要做的想法。\n・貼上文字就能收，一次貼多則只要中間空一行\n・可以加分類、釘選重要的一則\n・按「抽一個舊靈感」重新看看以前記過的\n・拍黑板或筆記上傳時，手寫的字不一定都讀得對，標示「不確定」的地方請對照原圖',
     tipSkip:'略過', tipNext:'下一步', tipStart:'開始使用', tipsReplay:'重新看一次操作提示',
-    tipT1:'先貼上，再整理', tipB1:'看到喜歡的句子、想去的店、活動頁面——先貼上來，之後再慢慢分類。這是這個 App 最核心的動作。',
+    tipT1:'貼上或拍照，我來整理', tipB1:'右下角的「✦ AI 貼上」：貼上文字、傳截圖或拍張照，我會判斷它是句子、咖啡廳還是活動，把重點整理好，你只要確認。',
     tipT2:'不確定放哪一類？', tipB2:'按標題旁的迴紋針「智慧貼上」，貼上文字會自動判斷該放哪個分頁，你只要確認就好。',
     tipT3:'長按新增，不用先切分頁', tipB3:'長按（手機用力按著）右下角的圓形按鈕，會跳出所有類型讓你直接選，不管現在在哪個分頁都可以。',
     tipT4:'標籤打字就能新增', tipB4:'加標籤時直接在框裡打字，找不到會出現「新增」。分頁上方只顯示你在用的標籤，畫面不會太亂。',
@@ -852,7 +884,7 @@ details.more[open]>summary{ border-style:solid; }
     dnSec:'每日提醒', dnTog:'每天提醒我看今天的三件', dnTime:'提醒時間', dnHint:'App 開著或在背景時會跳通知。網頁完全關掉時沒辦法自己叫醒你，想要一定收得到，請用下面的日曆提醒。iPhone 要先加到主畫面才收得到通知。', dnIcs:'加到手機日曆（每天重複）', dnTest:'傳一則測試通知', dnOn:'已開啟每日提醒', dnOffT:'已關閉每日提醒', dnDenied:'瀏覽器沒有允許通知，請到瀏覽器的網站設定開啟', dnNoSupport:'這個瀏覽器不支援通知（iPhone 請先加到主畫面）', dnBody:function(n,m){return '今天有 '+n+' 件要看'+(m?'，還有 '+m+' 則可以順手整理':'')+'。'}, dnBodyQ:function(m){return '有 '+m+' 則存很久的東西，花一分鐘整理吧。'}, dnIcsSum:'拾光小本：今天的三件', dnIcsDesc:'打開拾光小本，看今天的三件、整理幾則。', dnIcsOk:'日曆檔已下載，打開它就能加入', dnTestBody:'這是一則測試通知。',
     tipT8:'每天只看三件，整理五則就好', tipB8:'「今天」最上面是待整理的數量，點進去左滑封存、右滑留下，一次只有 5 則。下面是今天只需要看的 3 件，看完蓋一個章。',
     guideT_tidy:'整理一下與今日三件', guideB_tidy:'存了就不再看的東西，在這裡重新被看見：\n・「今天」最上面顯示待整理的數量，一次只整理 5 則\n・卡片左滑封存、右滑留下，也能按按鈕或用鍵盤左右鍵\n・留下之前順手點標籤分類\n・超過 45 天沒看的，會再回來問你一次\n・下面是今天只看的 3 件：快到期的優先，其次是放最久的\n・連續天數與每週處理的數量，只是小小的鼓勵',
-    tipT6:'資料只在你的裝置上', tipB6:'設定裡可以匯出成檔案備份，也可以匯入回來。太久沒備份，畫面上方會提醒你。',
+    tipT6:'資料只在你的裝置上', tipB6:'你存的東西只放在這個瀏覽器裡。只有按下「AI 貼上」時，那段文字或照片才會送出去整理。設定裡可以匯出備份，太久沒備份，畫面上方會提醒你。',
     gColl:'收藏', gGo:'想去', gList:'清單',
     secNav:'分頁排列', navAuto:'自動', navGroup:'分組', navFlat:'平鋪', navHint:'自動：分頁在 4 個以內就平鋪，更多就分組。想固定哪一種，自己選。',
     tl:'稍後閱讀', ta:'日子', tt:'旅行', to:'機會', tg:'送禮',
@@ -985,6 +1017,10 @@ details.more[open]>summary{ border-style:solid; }
     a2Setting:'Home screen', a2Preview:'Show the reminder card again', a2ios:'iPhone / iPad', a2droid:'Android',
     storeFail:'This browser cannot save your data (maybe private browsing, or storage is full). What you see will disappear on refresh. Export a backup first.', storeNear:'Storage is almost full. Export a backup, then tidy up what you no longer need.', storeFailToast:'Could not save. Export a backup first',
     obReplay:'Choose tabs again', obTitle:'What do you want to keep here?', obSub:'Pick a few. You can change this anytime in Settings.', obGo:'Get started', obAll:'All of them',
+    obQ1T:'Do you save lines you love?', obQ1S:'Quotes, and ideas that pop up out of nowhere', obQ2T:'Any places to go or events to catch?', obQ2S:'Cafés, restaurants, markets, concerts', obQ3T:'Things you want, or picks from friends?', obQ3S:'Cool off before you buy; remember who recommended what', obQ4T:'Articles to read later, or books to read?', obQ4S:'Keep them for when you have time',
+    obYes:'Yes, keep them', obNo:'Not now', obNext:'Next', obBack:'Back', obEg:'Example', obStep:function(a,b){return a+' / '+b},
+    obP1:'Slow is smooth, smooth is fast.', obP1t:'Learning', obP2:'Riverside Music Market', obP2m:'Oct 24, Sat · 2:00 PM', obP2p:'Tamsui Fisherman\'s Wharf', obP3:'New headphones', obP3m:'Cooling off for 7 days, then decide', obP4:'That article for the weekend', obP4m:'Unread',
+    obDoneT:'Your notebook is ready', obDoneS:'Add or remove tabs any time in Settings.', obDoneAI:function(l){return 'The "'+l+'" button at the bottom right is the quickest way in: paste text or snap a photo and I will sort it out.'}, obNone:'Nothing picked is fine. I have set up quotes, cafés and events for now.', obOpen:'Open the notebook', obStamp:'OPEN',
     odQ:'Lines you find online and want to keep', odC:'Places to visit, with address, IG and a stamp card', odE:'Concerts and exhibitions, with countdowns', odR:'What friends told you to try, and who said so', odW:'Things you want, after a cooling-off period',
     shareList:'Share as image', shNone:'Nothing to share yet', shMore:function(n){return n+' more…'}, shCountC:function(n){return n+(n===1?' café':' cafés')}, shCountE:function(n){return n+(n===1?' event':' events')},
     clAll:'My cafés', clWant:'Cafés I want to try', clBeen:'Cafés I have been to', clTag:function(n){return n+' cafés'}, evComing:'Coming up',
@@ -1035,7 +1071,7 @@ details.more[open]>summary{ border-style:solid; }
     guideT_p:'Places', guideB_p:'Anywhere you want to visit besides cafés — restaurants, spots, shops.\n・Same as cafés: paste an address, map link or IG text and it fills in\n・Want or been, and rate it once you have been',
     guideT_i:'Ideas', guideB_i:'Jot things down, no pressure to act on them.\n・Paste text to save one; leave a blank line between several at once\n・Add categories, pin the important ones\n・"Revisit an old one" resurfaces something you saved a while back\n・When you upload a photo of a board or notes, handwriting will not always be read perfectly; check anything marked as unsure against the original',
     tipSkip:'Skip', tipNext:'Next', tipStart:'Get started', tipsReplay:'Replay these tips',
-    tipT1:'Paste first, sort later', tipB1:"See a line you love, a place to try, an event page — paste it in, and sort it out later. That's the core move of this app.",
+    tipT1:'Paste or snap, I will sort it', tipB1:'The "✦ AI paste" button at the bottom right: paste text, upload a screenshot or take a photo, and I work out whether it is a quote, a café or an event and tidy up the details. You just confirm.',
     tipT2:'Not sure where it goes?', tipB2:'Tap the clip icon next to the title, "Smart paste" — paste text and it guesses the right tab. You just confirm.',
     tipT3:'Long-press to add, from anywhere', tipB3:'Long-press (press and hold) the round button and every type pops up to pick from, no matter which tab you are on.',
     tipT4:'Type to add a tag', tipB4:'Type in the tag box when adding something; an unknown name offers "Add". The row above only shows tags you actually use.',
@@ -1047,7 +1083,7 @@ details.more[open]>summary{ border-style:solid; }
     dnSec:'Daily reminder', dnTog:"Remind me about today's picks", dnTime:'Reminder time', dnHint:'Notifications appear while the app is open or in the background. A web page cannot wake itself once it is fully closed, so for a reminder that always arrives, add the calendar event below. On iPhone, add the app to your Home Screen first.', dnIcs:'Add to phone calendar (repeats daily)', dnTest:'Send a test notification', dnOn:'Daily reminder is on', dnOffT:'Daily reminder is off', dnDenied:'Notifications are blocked. Allow them in your browser site settings', dnNoSupport:'This browser does not support notifications (on iPhone, add to Home Screen first)', dnBody:function(n,m){return n+(n===1?' thing':' things')+' for today'+(m?', plus '+m+' to tidy':'')+'.'}, dnBodyQ:function(m){return m+' old saves are waiting. One minute is enough.'}, dnIcsSum:'Little Finds: your picks for today', dnIcsDesc:"Open Little Finds, look at today's picks and tidy a few.", dnIcsOk:'Calendar file downloaded. Open it to add the event', dnTestBody:'This is a test notification.',
     tipT8:'Three a day, five to tidy', tipB8:'Today starts with how many saves are waiting. Open it, swipe left to delete and right to keep, five at a time. Below are the three things worth a look today. Each one earns a stamp.',
     guideT_tidy:'Tidy up and Today\'s three', guideB_tidy:"Things you saved but never looked at come back into view here:\n・Today shows how many are waiting, tidied five at a time\n・Swipe a card left to archive, right to keep. Buttons and the arrow keys work too\n・Tap a tag before you keep it to sort it on the spot\n・Anything untouched for 45 days comes back once more\n・Below are today's three: deadlines first, then whatever has waited longest\n・The streak and weekly count are only a small nudge",
-    tipT6:'Your data stays on your device', tipB6:'Export a backup file in Settings, and import it back anytime. A banner appears if it has been a while.',
+    tipT6:'Your data stays on your device', tipB6:'What you save lives only in this browser. Text or a photo is sent out only when you tap "AI paste". Export a backup in Settings; a banner appears if it has been a while.',
     gColl:'Saved', gGo:'To visit', gList:'Lists',
     secNav:'Tab layout', navAuto:'Auto', navGroup:'Grouped', navFlat:'Flat', navHint:'Auto: flat with 4 tabs or fewer, grouped with more. Or pick one yourself.',
     tl:'Read later', ta:'Key dates', tt:'Trips', to:'Opportunities', tg:'Gifts',
@@ -2300,7 +2336,7 @@ details.more[open]>summary{ border-style:solid; }
     } else if(sheet.type==='tips'){
       h+=tipsBody();
     } else if(sheet.type==='onboard'){
-      h+=onboardBody();
+      h+=(sheet.guided?obGuidedBody():onboardBody());
     } else if(sheet.type==='a2hs'){
       h+=a2Body();
     } else if(sheet.type==='import'){
@@ -3439,15 +3475,11 @@ details.more[open]>summary{ border-style:solid; }
   }
 
   function TIPS(){
+    /* three cards only: the main move, what brings things back, and where the data lives. Everything else is in the manual. */
     return [
       {c:'#003366',icon:ICON_TIP1,tk:1,ring:false},
       {c:'#B44B33',icon:ICON_TIDY,tk:8,ring:false},
-      {c:'#2E6F95',icon:ICON_TIP7,tk:7,ring:false},
-      {c:'#1F7A7A',icon:ICON_SMART,tk:2,ring:false},
-      {c:'#B44B33',icon:ICON_TIP3,tk:3,ring:true},
-      {c:'#6A4C7C',icon:ICON_TIP4,tk:4,ring:false},
-      {c:'#4F7297',icon:ICON_SELECT,tk:5,ring:false},
-      {c:'#8FB8DE',icon:ICON_TIP6,tk:6,ring:false}
+      {c:'#4F7297',icon:ICON_TIP6,tk:6,ring:false}
     ];
   }
   function tipsBody(){
@@ -3470,8 +3502,39 @@ details.more[open]>summary{ border-style:solid; }
   },{passive:true});
 
   /* ---------- first-run: choose what to keep ---------- */
-  function afterIntro(){ if(!S.set.onboarded) openSheet({type:'onboard',sel:ONB_KINDS.reduce(function(o,k){o[k]=false;return o},{})}); else if(!S.set.tipsSeen) openSheet({type:'tips',idx:0}); else armA2(); }
+  function afterIntro(){ if(!S.set.onboarded) openSheet({type:'onboard',guided:true,step:0,yes:OB_STEPS.map(function(s){return s.def}),sel:{}}); else if(!S.set.tipsSeen) openSheet({type:'tips',idx:0}); else armA2(); }
   var ONB_KINDS=['q','i','l','c','p','e','a','t','r','w','b','o','g'];
+  /* guided first run: four plain questions, each switching on a few tabs; the rarer tabs (days, trips, opportunities, gifts) stay in Settings */
+  var OB_STEPS=[{k:['q','i'],def:true},{k:['c','p','e'],def:true},{k:['w','r'],def:true},{k:['l','b'],def:false}];
+  function obChosen(yes){
+    var out=[]; OB_STEPS.forEach(function(s,i){ if(yes[i]) s.k.forEach(function(k){ out.push(k); }); });
+    return out;
+  }
+  function obGuidedBody(){
+    var st=Math.max(0,Math.min(sheet.step||0,OB_STEPS.length)), n=OB_STEPS.length, fresh=(sheet.shown!==st); sheet.shown=st;
+    var h='<div class="obq'+(fresh?' fresh':'')+'" id="obq">';
+    if(st<n){
+      var prev=[
+        '<div class="obprev note"><span class="eg">'+esc(t('obEg'))+'</span><p class="pt">'+esc(t('obP1'))+'</p><span class="ptag">'+esc(t('obP1t'))+'</span></div>',
+        '<div class="obprev"><span class="eg">'+esc(t('obEg'))+'</span><p class="pt">'+esc(t('obP2'))+'</p><p class="pm">'+esc(t('obP2m'))+'</p><p class="pm">'+esc(t('obP2p'))+'</p></div>',
+        '<div class="obprev"><span class="eg">'+esc(t('obEg'))+'</span><p class="pt">'+esc(t('obP3'))+'</p><p class="pm">'+esc(t('obP3m'))+'</p></div>',
+        '<div class="obprev"><span class="eg">'+esc(t('obEg'))+'</span><p class="pt">'+esc(t('obP4'))+'</p><p class="pm">'+esc(t('obP4m'))+'</p></div>'
+      ][st];
+      if(st===0) h+=seg([['zh','中文'],['en','English']],S.set.lang,'setLang')+'<div style="height:14px"></div>';
+      h+='<p class="obstep">'+esc(t('obStep',st+1,n))+'</p><h3>'+esc(t('obQ'+(st+1)+'T'))+'</h3><p class="sub">'+esc(t('obQ'+(st+1)+'S'))+'</p>'+prev;
+      h+='<div class="obchoice" role="radiogroup"><button class="'+(sheet.yes[st]?'on':'')+'" data-act="obYes" data-v="1" role="radio" aria-checked="'+(sheet.yes[st]?'true':'false')+'">'+esc(t('obYes'))+'</button>'
+        +'<button class="'+(!sheet.yes[st]?'on':'')+'" data-act="obYes" data-v="0" role="radio" aria-checked="'+(!sheet.yes[st]?'true':'false')+'">'+esc(t('obNo'))+'</button></div>';
+      h+='<div class="obnav">'+(st>0?'<button class="linkbtn" data-act="obBack">'+esc(t('obBack'))+'</button>':'<span></span>')+'<button class="btn" data-act="obNext">'+esc(t('obNext'))+'</button></div>';
+      h+='<div class="obdots" aria-hidden="true">'+OB_STEPS.map(function(_,i){return '<i class="'+(i===st?'on':'')+'"></i>'}).join('')+'</div>';
+    } else {
+      var ks=obChosen(sheet.yes), none=!ks.length; if(none) ks=['q','c','e'];
+      h+='<div class="stampwrap"><span class="stampbig">'+esc(t('obStamp'))+'</span></div><h3>'+esc(t('obDoneT'))+'</h3>';
+      h+='<div class="obchips">'+ks.map(function(k,i){return '<span style="--c:'+(TABC[k]||'#5E6B7A')+';--n:'+i+'"><i></i>'+esc(t('t'+k))+'</span>'}).join('')+'</div>';
+      h+='<p class="sub" style="margin-top:14px">'+esc(none?t('obNone'):t('obDoneS'))+'</p><p class="sub">'+esc(t('obDoneAI',t('fabAI')))+'</p>';
+      h+='<div class="obnav"><button class="linkbtn" data-act="obBack">'+esc(t('obBack'))+'</button><button class="btn" data-act="obOpen">'+esc(t('obOpen'))+'</button></div>';
+    }
+    return h+'</div>';
+  }
   function onboardBody(){
     var sel=sheet.sel, n=ONB_KINDS.filter(function(k){return sel[k]}).length;
     var h='<h3>'+t('obTitle')+'</h3><p class="hint" style="text-align:center;margin:-6px 0 12px">'+t('obSub')+'</p>';
@@ -3516,6 +3579,8 @@ details.more[open]>summary{ border-style:solid; }
   }
   window.addEventListener('popstate',function(){
     if(ignorePop>0){ ignorePop--; if(ignorePop===0) histSettle(); return; }
+    /* first-run questions: the back gesture steps back one question instead of dropping out of onboarding */
+    if(sheet&&sheet.type==='onboard'&&sheet.guided){ if((sheet.step||0)>0){ sheet.step--; renderSheet(); } histDoPush(); return; }
     if(sheet){ histPushed=false; closeSheet(null,true); }
   });
 
@@ -4504,6 +4569,15 @@ details.more[open]>summary{ border-style:solid; }
       case 'obGroup': { var gm=GROUPS[v].members, all=gm.every(function(k){return sheet.sel[k]}); gm.forEach(function(k){ sheet.sel[k]=!all; }); renderSheet(); break; }
       case 'obTog': sheet.sel[v]=!sheet.sel[v]; renderSheet(); break;
       case 'obGo': applyOnboard(sheet.sel); break;
+      case 'obYes': if(sheet.guided&&(sheet.step||0)<OB_STEPS.length){ sheet.yes[sheet.step||0]=(v==='1'); renderSheet(); } break;
+      case 'obNext': if(sheet.guided&&(sheet.step||0)<OB_STEPS.length){ sheet.step=(sheet.step||0)+1; renderSheet(); } break;
+      case 'obBack': if(sheet.guided&&(sheet.step||0)>0){ sheet.step--; renderSheet(); } break;
+      case 'obOpen': {
+        if(!sheet.guided||sheet.busy) break; sheet.busy=true;
+        var oks=obChosen(sheet.yes); if(!oks.length) oks=['q','c','e'];
+        var osel=ONB_KINDS.reduce(function(o,k){ o[k]=oks.indexOf(k)>=0; return o; },{});
+        applyOnboard(osel); break;
+      }
       case 'obAll': applyOnboard(ONB_KINDS.reduce(function(o,k){o[k]=true;return o},{})); break;
       case 'a2Go': if(!a2Install()) openSheet({type:'a2hs'}); break;
       case 'a2Close': a2Dismiss(); break;
