@@ -381,11 +381,14 @@ export async function onRequestPost({ request, env }) {
     // does that anyway, so check the text itself and sort again with the choice narrowed to notes.
     // The small model often returns one event for a poster with several. Several timed dates in the text means several
     // events, so sort each piece on its own (in parallel) instead of trusting the model to split them.
-    if (items.length === 1 && items[0].kind === 'e' && kinds.includes('e') && countTimedDates(text) >= 2) {
+    // (The model may call such a text a trip or a place, so the trigger does not depend on its first kind, except for
+    // things that clearly are not event lists.)
+    const tripish = /flight|hotel|itinerary|booking|check-?in|行程|機票|住宿|飯店|航班|訂房|旅館/i.test(text);
+    if (items.length === 1 && kinds.includes('e') && !['q', 'c', 'b', 'w', 'i'].includes(items[0].kind) && !(items[0].kind === 't' && tripish) && countTimedDates(text) >= 2) {
       try {
         const pieces = splitByEvents(text).slice(0, 6);
         if (pieces.length >= 2) {
-          const parts = await Promise.all(pieces.map((pc) => runSort(kinds, '', pc)));
+          const parts = await Promise.all(pieces.map((pc) => runSort(['e'], 'This text is one single event.', pc)));
           const evs = parts.map((a) => a[0]).filter((x) => x && x.kind === 'e' && x.name);
           if (evs.length >= 2) items = evs;
         }
