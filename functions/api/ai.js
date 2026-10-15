@@ -230,14 +230,29 @@ function grounding(field, text) {
   return hit / f.size;
 }
 
-// How many separate dated-and-timed mentions does the text hold? (a sign-up deadline has no time, so it is not counted)
-function countTimedDates(t) {
+// Dated-and-timed mentions in the text (a sign-up deadline has no time, so it is not counted), first occurrence of each date.
+function timedDates(t) {
   const s = String(t || '');
   const months = '(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\\.?\\s+\\d{1,2}';
   const re = new RegExp('(\\d{4}-\\d{2}-\\d{2}|\\d{1,2}[/.月]\\d{1,2}|' + months + ')[^\\n]{0,15}?(?:\\d{1,2}[:：]\\d{2}|[上下]午|晚上|\\b\\d{1,2}\\s?(?:am|pm)\\b)', 'gi');
-  const set = new Set();
-  for (const m of s.matchAll(re)) set.add(m[1].toLowerCase());
-  return set.size;
+  const seen = new Set(), out = [];
+  for (const m of s.matchAll(re)) { const k = m[1].toLowerCase(); if (!seen.has(k)) { seen.add(k); out.push({ key: k, index: m.index }); } }
+  return out;
+}
+const countTimedDates = (t) => timedDates(t).length;
+
+// Cut the text into one piece per event: each piece starts at the sentence that holds that event's date and time.
+function splitByEvents(t) {
+  const s = String(t || ''), hits = timedDates(s);
+  if (hits.length < 2) return [s];
+  const starts = hits.map((h, i) => {
+    if (i === 0) return 0;
+    const before = s.slice(0, h.index);
+    let cut = 0;
+    for (const m of before.matchAll(/[。！!？?\n；;]|\.\s|另外還有|另外|還有|\balso\b[:,]?/gi)) cut = Math.max(cut, m.index + m[0].length);
+    return Math.max(cut, hits[i - 1].index + 1);
+  });
+  return starts.map((st, i) => s.slice(st, i + 1 < starts.length ? starts[i + 1] : s.length).trim()).filter(Boolean);
 }
 
 function looksLikeStudy(t) {
@@ -308,7 +323,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     // Stage 2: classify + extract
-    const runSort = async (kinds, extra) => {
+    const runSort = async (kinds, extra, userText = text) => {
     const system = [
       'You sort things a person saved (screenshots, copied text) into the right tab of a small notebook app, and extract key fields.',
       'Allowed tabs (use the single-letter key):',
@@ -328,7 +343,7 @@ export async function onRequestPost({ request, env }) {
 
     const out = await chat(env, TEXT_MODEL, [
       { role: 'system', content: system },
-      { role: 'user', content: text },
+      { role: 'user', content: userText },
     ], { max_tokens: 4096, quick: true });
 
     const parsed = extractJson(out);
@@ -364,10 +379,16 @@ export async function onRequestPost({ request, env }) {
     let items = await runSort(kinds, '');
     // Study material (formulas, lecture or blackboard notes) must never land in recs/events/etc. The small model sometimes
     // does that anyway, so check the text itself and sort again with the choice narrowed to notes.
+    // The small model often returns one event for a poster with several. Several timed dates in the text means several
+    // events, so sort each piece on its own (in parallel) instead of trusting the model to split them.
     if (items.length === 1 && items[0].kind === 'e' && kinds.includes('e') && countTimedDates(text) >= 2) {
       try {
-        const again = await runSort(kinds, 'The text lists SEVERAL separate events, each with its own date and time. Reply {"items": [...]} with one object per event, using each event\'s own date, time and place. A sign-up deadline is a "deadline", not an event.');
-        if (again.length >= 2 && again.every((x) => x.name)) items = again;
+        const pieces = splitByEvents(text).slice(0, 6);
+        if (pieces.length >= 2) {
+          const parts = await Promise.all(pieces.map((pc) => runSort(kinds, '', pc)));
+          const evs = parts.map((a) => a[0]).filter((x) => x && x.kind === 'e' && x.name);
+          if (evs.length >= 2) items = evs;
+        }
       } catch { /* keep the first answer */ }
     }
     if (items.length === 1 && looksLikeStudy(text) && !items[0].date && !['i', 'q', 'b'].includes(items[0].kind) && (kinds.includes('i') || kinds.includes('q'))) {
