@@ -236,10 +236,10 @@ export async function onRequestPost({ request, env }) {
   if (!env.NEBIUS_API_KEY) return json({ error: 'not_configured' }, 503);
 
   const ip = request.headers.get('cf-connecting-ip') || 'x';
-  if (limited(ip, Number(env.PER_IP_PER_HOUR) || PER_IP_PER_HOUR)) return json({ error: 'rate_limited' }, 429);
-
   let body;
   try { body = await request.json(); } catch { return json({ error: 'bad_request' }, 400); }
+  // Online checks follow every sort, so they get their own allowance and do not eat the sorting one.
+  if (limited(body && body.mode === 'verify' ? ip + ':v' : ip, Number(env.PER_IP_PER_HOUR) || PER_IP_PER_HOUR)) return json({ error: 'rate_limited' }, 429);
 
   const today0 = /^\d{4}-\d{2}-\d{2}$/.test(body.today || '') ? body.today : new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10);
   if (body.mode === 'verify') {

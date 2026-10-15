@@ -1609,7 +1609,8 @@ details.more[open]>summary{ border-style:solid; }
   function guessName(txt){
     var lines=txt.split('\n').map(function(x){return x.trim()}).filter(Boolean);
     for(var i=0;i<lines.length;i++){ var l=lines[i].replace(/https?:\/\/\S+/g,'').trim(); if(l&&l.length<=32&&!/^[\d\s\/.:\-年月日]+$/.test(l)) return l; }
-    return '';
+    var first=(lines[0]||'').replace(/https?:\/\/\S+/g,'').split(/[，,。；;！!？?]\s*/)[0].trim();
+    return (first.length>=2&&first.length<=40)?first:'';
   }
 
   /* ---------- events (dates) ---------- */
@@ -4642,7 +4643,7 @@ details.more[open]>summary{ border-style:solid; }
       aiBusy=false; aiImage='';
       if(!sheet||sheet.type!=='smart') return;
       if(!txt){ d.stage='in'; renderSheet(false); toast(msg); return; }
-      show({kind:classify(txt),name:guessName(txt),ai:false,note:t('aiBasicNote')});
+      show({kind:classify(txt),name:guessName(txt),ai:false,note:msg||t('aiBasicNote')});
     };
     var ctl=(typeof AbortController!=='undefined')?new AbortController():null, slowT=setTimeout(function(){ var el=document.getElementById('aiBusyTxt'); if(el&&aiBusy) el.textContent=t('aiBusy2'); },7000), killT=setTimeout(function(){ if(ctl) ctl.abort(); },45000);
     fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},signal:ctl?ctl.signal:undefined,
