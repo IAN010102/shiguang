@@ -4594,7 +4594,7 @@ details.more[open]>summary{ border-style:solid; }
       if(!r.ai&&r.note) h+='<p class="hint" style="margin:8px 0 0">'+esc(r.note)+'</p>';
       if(r.verifyBusy) h+='<p class="hint" style="margin:8px 0 0;opacity:.7">🔎 '+esc(t('verBusy'))+'</p>';
       h+=verHtml(r.verify,true);
-      if(!r.verify&&r.verify_why&&r.verify_why!=='no_key'&&r.verify_why!=='skipped') h+='<p class="hint" style="margin:8px 0 0;opacity:.7">🔎 '+esc(t('verNone'))+' ('+esc(r.verify_why)+')</p>';
+      if(!r.verify&&r.verify_why&&r.verify_why!=='no_key'&&r.verify_why!=='skipped') h+='<p class="hint" style="margin:8px 0 0;opacity:.7">🔎 '+esc(t('verNone'))+(/^(no_match|no_results|model_unsure|no_quote)$/.test(r.verify_why)?'':' ('+esc(r.verify_why)+')')+'</p>';
       h+='</div>';
       h+='<div class="btnrow"><button class="btn" data-act="smartSave" style="flex:1">'+t('aiTake')+'</button><button class="btn ghost" data-act="smartGo">'+t('aiEdit')+'</button></div>';
       h+='<div class="rowsb"><button class="linkbtn" data-act="smartReset">'+t('aiAgain')+'</button><button class="linkbtn" data-act="closeSheet">'+t('cancel')+'</button></div>';

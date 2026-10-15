@@ -164,6 +164,12 @@ async function verifyOnline(env, item, lang, today) {
   if (!results.length) return null;
   const det = addressCheck(item, results, lang) || usAddressCheck(item, results, lang);
   if (det) return { ...det, checked: results.length };
+  // A snippet only counts if it is about this exact thing. Otherwise an unrelated article can "contradict" a made-up or
+  // little-known event and push a wrong date onto the user.
+  const same = (r) => sq(r.title + ' ' + r.content).includes(sq(item.name)) || grounding(item.name, r.title + ' ' + r.content) >= 0.75;
+  const related = results.filter(same);
+  if (!related.length) return { status: 'unverified', why: 'no_match', checked: results.length };
+  results.length = 0; related.forEach((r) => results.push(r));
   const claim = { name: item.name, date: item.date, time: item.time, place: item.place, deadline: item.deadline };
   const sys = [
     'You fact-check details a user saved against web search snippets. Today is ' + today + '.',
@@ -222,6 +228,16 @@ function grounding(field, text) {
   if (!f.size) return 1;
   let hit = 0; f.forEach((g) => { if (t.has(g)) hit++; });
   return hit / f.size;
+}
+
+// How many separate dated-and-timed mentions does the text hold? (a sign-up deadline has no time, so it is not counted)
+function countTimedDates(t) {
+  const s = String(t || '');
+  const months = '(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\\.?\\s+\\d{1,2}';
+  const re = new RegExp('(\\d{4}-\\d{2}-\\d{2}|\\d{1,2}[/.月]\\d{1,2}|' + months + ')[^\\n]{0,15}?(?:\\d{1,2}[:：]\\d{2}|[上下]午|晚上|\\b\\d{1,2}\\s?(?:am|pm)\\b)', 'gi');
+  const set = new Set();
+  for (const m of s.matchAll(re)) set.add(m[1].toLowerCase());
+  return set.size;
 }
 
 function looksLikeStudy(t) {
@@ -348,6 +364,12 @@ export async function onRequestPost({ request, env }) {
     let items = await runSort(kinds, '');
     // Study material (formulas, lecture or blackboard notes) must never land in recs/events/etc. The small model sometimes
     // does that anyway, so check the text itself and sort again with the choice narrowed to notes.
+    if (items.length === 1 && items[0].kind === 'e' && kinds.includes('e') && countTimedDates(text) >= 2) {
+      try {
+        const again = await runSort(kinds, 'The text lists SEVERAL separate events, each with its own date and time. Reply {"items": [...]} with one object per event, using each event\'s own date, time and place. A sign-up deadline is a "deadline", not an event.');
+        if (again.length >= 2 && again.every((x) => x.name)) items = again;
+      } catch { /* keep the first answer */ }
+    }
     if (items.length === 1 && looksLikeStudy(text) && !items[0].date && !['i', 'q', 'b'].includes(items[0].kind) && (kinds.includes('i') || kinds.includes('q'))) {
       try {
         const again = await runSort([kinds.includes('i') ? 'i' : 'q'], 'The content is study material (class or lecture notes, formulas, definitions). It is for review: purpose must be "review", and "summary", "recall_q" and "recall_a" must be filled in.');
