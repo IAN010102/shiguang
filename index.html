@@ -3498,10 +3498,24 @@ details.more[open]>summary{ border-style:solid; }
 
   /* ---------- today, global search, backup, history ---------- */
   function dataTabs(){ return activeTabs().filter(function(k){return k!=='d'}); }
-  function histPush(){ try{ history.pushState({sheet:1},''); histPushed=true; }catch(e){ histPushed=false; } }
-  function histPop(){ if(!histPushed) return; histPushed=false; try{ ignorePop++; history.back(); }catch(e){ ignorePop=Math.max(0,ignorePop-1); } }
+  /* history.back() is asynchronous: a pushState issued right after it (closing one sheet and opening the next)
+     used to land on the wrong entry, and the next close then walked out of the app. So a push that arrives while a
+     back is still travelling waits until that back has finished. */
+  var histBusy=false, histWant=false, histTimer=null;
+  function histDoPush(){ try{ history.pushState({sheet:1},''); histPushed=true; }catch(e){ histPushed=false; } }
+  function histSettle(){
+    clearTimeout(histTimer); histTimer=null; histBusy=false; ignorePop=0;
+    if(histWant){ histWant=false; if(sheet) histDoPush(); else histPushed=false; }
+  }
+  function histPush(){ if(histBusy){ histWant=true; histPushed=true; return; } histDoPush(); }
+  function histPop(){
+    if(histWant){ histWant=false; histPushed=false; return; }
+    if(!histPushed) return; histPushed=false;
+    try{ ignorePop++; histBusy=true; history.back(); clearTimeout(histTimer); histTimer=setTimeout(histSettle,700); }
+    catch(e){ ignorePop=Math.max(0,ignorePop-1); histBusy=false; }
+  }
   window.addEventListener('popstate',function(){
-    if(ignorePop>0){ ignorePop--; return; }
+    if(ignorePop>0){ ignorePop--; if(ignorePop===0) histSettle(); return; }
     if(sheet){ histPushed=false; closeSheet(null,true); }
   });
 
