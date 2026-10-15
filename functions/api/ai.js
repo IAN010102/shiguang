@@ -215,6 +215,15 @@ function snapName(name, text, kind) {
   return best && bestScore >= 0.5 ? best.slice(0, 80) : name;
 }
 
+// A field the model filled in must be backed by the text. Drops invented places, notes and how-to lines, and flags invented names.
+function grounding(field, text) {
+  const grams = (t) => { const o = new Set(); const x = String(t).toLowerCase(); for (const m of x.matchAll(/[a-z0-9]{3,}/g)) o.add(m[0]); const c = x.replace(/[^\u4e00-\u9fff]/g, ''); for (let i = 0; i < c.length - 1; i++) o.add(c.slice(i, i + 2)); return o; };
+  const f = grams(field), t = grams(text);
+  if (!f.size) return 1;
+  let hit = 0; f.forEach((g) => { if (t.has(g)) hit++; });
+  return hit / f.size;
+}
+
 function looksLikeStudy(t) {
   const s = String(t || '');
   const hits = (s.match(/[=∫Σ∑πθωΔ∂√±]|\b[a-zA-Z]\w?\([a-z0-9]\)|\d\s*\/\s*\d/g) || []).length;
@@ -267,13 +276,18 @@ export async function onRequestPost({ request, env }) {
     // Stage 1: read the image
     let transcript = '';
     if (image) {
-      transcript = await chat(env, VISION_MODEL, [{
+      const visionMsg = [{
         role: 'user',
         content: [
-          { type: 'text', text: 'Transcribe all text in this image exactly as written (Chinese and English). If it is a photo of a blackboard, whiteboard, slide or notebook page, transcribe what is written on it (write formulas on one line, for example T_g(f) = -1/(2π) · dθ(f)/df), and ignore the room, ceiling, desks and people. If nothing in the image is readable, output one short line starting with [photo] that says what it shows. Ignore the phone status bar (clock, battery, signal), keyboard, and any map or app background around the main content; transcribe only the main card or post. Mark anything unclear or hidden as [uncertain]; never guess. Output only the transcription.' },
+          { type: 'text', text: 'Transcribe all text in this image exactly as written (Chinese and English). If it is a photo of a blackboard, whiteboard, slide or notebook page, transcribe what is written on it (write formulas on one line, for example T_g(f) = -1/(2π) · dθ(f)/df), and ignore the room, ceiling, desks and people. Ignore the phone status bar (clock, battery, signal), keyboard, and any map or app background around the main content; transcribe only the main card or post. Mark anything unclear or hidden as [uncertain]; never guess. If nothing in the image is readable, output one short line starting with [photo] that says what it shows. Output only the transcription.' },
           { type: 'image_url', image_url: { url: image } },
         ],
-      }], { max_tokens: 2048 });
+      }];
+      const readable = (t) => String(t || '').replace(/\[(?:uncertain|photo)\]/gi, '').replace(/\s+/g, '').length >= 12;
+      // Thinking off first (fast). A dense blackboard photo can still come back empty, so retry once with more room.
+      transcript = await chat(env, VISION_MODEL, visionMsg, { max_tokens: 3000, quick: true });
+      if (!readable(transcript)) transcript = await chat(env, VISION_MODEL, visionMsg, { max_tokens: 4096 });
+      if (!readable(transcript) && !text.trim()) return json({ error: 'unreadable' }, 422);
       text = (text ? text + '\n' : '') + transcript;
     }
 
@@ -286,7 +300,7 @@ export async function onRequestPost({ request, env }) {
       'Reply with ONE JSON object and nothing else:',
       `Today is ${today}.`,
       '{"kind": "<key>", "confidence": 0-1, "purpose": "remind | review | none", "name": "<the proper name exactly as written in the text, never reworded or shortened>", "date": "event date YYYY-MM-DD or empty", "time": "HH:MM 24h or empty", "place": "venue or address, or empty", "deadline": "sign-up/application deadline YYYY-MM-DD or empty", "how_to": "how to sign up / buy / get there, or empty", "next_step": "one concrete next action", "notes": "see rules", "summary": "see rules", "recall_q": "see rules", "recall_a": "see rules", "uncertain": ["fields you are not sure about"]}',
-      'Rules: never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5.',
+      'Rules: use ONLY what is in the text. If the text is too short or unclear to tell what it is, do not make anything up: pick the closest tab, leave every other field empty and set confidence below 0.3. Never invent facts. If a field is not stated, use an empty string. "date" is when the event itself happens; "deadline" is the last day to sign up or apply; never put one in the other. If a date has no year, use the nearest upcoming occurrence on or after today and add "year" to "uncertain". Text marked [uncertain] must be listed in "uncertain". If nothing fits well, pick the closest tab and set confidence below 0.5.',
       '"purpose": "remind" = time-bound things that only need a nudge when the time comes (events, deadlines, appointments, birthdays); "review" = knowledge or inspiration worth remembering and revisiting (a quote, a book passage, lecture notes, a key idea); "none" = just storing it (a place, something to buy, a link). Never choose "review" for an event or a deadline.',
       '"next_step" depends on the kind. For a quote or line the person loves (a favourite line from a show, film, book or song): a light, specific way to enjoy or keep it, never homework; vary it, choosing from: go back to the scene or page it came from, send it to the one person who would get it, or pair it with a song or a quiet café. For class or lecture notes, blackboard photos and formulas: study material is something to review, so use purpose "review", never "remind", and never kind recs; the next_step is a short, gentle suggestion for reviewing (never "ask the teacher" or "look it up"), phrased as an invitation and not a command (for example: you could try explaining it in your own words, see if you can answer the recall question without peeking, or look for one real example of it). For events, places and cafés: the concrete practical step. One sentence, under 40 Chinese characters or 90 English characters, warm and plain, no exclamation marks, and never state facts that are not in the text.',
       '"notes": useful facts worth keeping about the thing (opening hours, payment method, what to order, tips), one fact per line, max 240 characters, no app or screen text such as ratings widgets, buttons or clock; empty if none.',
@@ -323,6 +337,12 @@ export async function onRequestPost({ request, env }) {
     const rawItems = Array.isArray(parsed.items) ? parsed.items.filter((x) => x && typeof x === 'object').slice(0, 6) : [parsed];
     const items = (rawItems.length ? rawItems : [parsed]).map(shape);
     items.forEach((x) => { if (x.kind === 'q') x.summary = ''; }); // a quote stays as the user's own words
+    items.forEach((x) => {
+      ['place', 'how_to', 'notes'].forEach((f) => { if (x[f] && grounding(x[f], text) < 0.3) x[f] = ''; });
+      if (['c', 'p', 'e', 'w', 'b'].includes(x.kind) && x.name && grounding(x.name, text) < 0.2) {
+        x.name = ''; x.confidence = Math.min(x.confidence, 0.3); if (!x.uncertain.includes('name')) x.uncertain.push('name');
+      }
+    });
     return items;
     };
     let items = await runSort(kinds, '');
