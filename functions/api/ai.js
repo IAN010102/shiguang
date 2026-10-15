@@ -215,6 +215,13 @@ function snapName(name, text, kind) {
   return best && bestScore >= 0.5 ? best.slice(0, 80) : name;
 }
 
+function looksLikeStudy(t) {
+  const s = String(t || '');
+  const hits = (s.match(/[=∫Σ∑πθωΔ∂√±]|\b[a-zA-Z]\w?\([a-z0-9]\)|\d\s*\/\s*\d/g) || []).length;
+  const words = /lecture|notes?\b|筆記|上課|公式|定義|定理|theorem|proof|習題|例題|\bexample\b|考試|\bexam\b|chapter|章節|delay|延遲|transform|轉換|frequency|頻率|方程|equation|algorithm|演算法/i.test(s);
+  return hits >= 4 || (hits >= 2 && words) || (words && /lecture|上課|筆記|notes?\b/i.test(s) && s.length > 40);
+}
+
 export async function onRequestPost({ request, env }) {
   const startedAt = Date.now();
   if (!env.NEBIUS_API_KEY) return json({ error: 'not_configured' }, 503);
@@ -271,6 +278,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     // Stage 2: classify + extract
+    const runSort = async (kinds, extra) => {
     const system = [
       'You sort things a person saved (screenshots, copied text) into the right tab of a small notebook app, and extract key fields.',
       'Allowed tabs (use the single-letter key):',
@@ -284,8 +292,9 @@ export async function onRequestPost({ request, env }) {
       '"notes": useful facts worth keeping about the thing (opening hours, payment method, what to order, tips), one fact per line, max 240 characters, no app or screen text such as ratings widgets, buttons or clock; empty if none.',
       'If purpose is "review" and the content is class/lecture notes or a long passage: "summary" = concise study notes in the content language, max 500 characters, single line breaks only, no blank lines; otherwise "summary" is empty. If purpose is "review": "recall_q" = one question that tests the key idea, "recall_a" = a short answer taken from the content; otherwise both empty.',
       'If the content clearly holds several separate things (for example a list or poster of several different events), reply {"items": [object, ...]} with at most 6 objects of the shape above, one per thing; otherwise reply with a single object. Never split one thing\'s details (its date, place, deadline) into several items.',
+      extra || '',
       lang === 'en' ? 'Write name, how_to, next_step, notes, summary, recall_q and recall_a in English.' : 'name、how_to、next_step、notes、summary、recall_q、recall_a 請用繁體中文書寫。',
-    ].join('\n');
+    ].filter(Boolean).join('\n');
 
     const out = await chat(env, TEXT_MODEL, [
       { role: 'system', content: system },
@@ -314,6 +323,17 @@ export async function onRequestPost({ request, env }) {
     const rawItems = Array.isArray(parsed.items) ? parsed.items.filter((x) => x && typeof x === 'object').slice(0, 6) : [parsed];
     const items = (rawItems.length ? rawItems : [parsed]).map(shape);
     items.forEach((x) => { if (x.kind === 'q') x.summary = ''; }); // a quote stays as the user's own words
+    return items;
+    };
+    let items = await runSort(kinds, '');
+    // Study material (formulas, lecture or blackboard notes) must never land in recs/events/etc. The small model sometimes
+    // does that anyway, so check the text itself and sort again with the choice narrowed to notes.
+    if (items.length === 1 && looksLikeStudy(text) && !items[0].date && !['i', 'q', 'b'].includes(items[0].kind) && (kinds.includes('i') || kinds.includes('q'))) {
+      try {
+        const again = await runSort([kinds.includes('i') ? 'i' : 'q'], 'The content is study material (class or lecture notes, formulas, definitions). It is for review: purpose must be "review", and "summary", "recall_q" and "recall_a" must be filled in.');
+        if (again.length === 1 && again[0].name) items = again;
+      } catch { /* keep the first answer */ }
+    }
     if (items.length === 1) {
       const it = items[0];
       if (it.kind === 'p' && kinds.includes('c') && /咖啡|cafe|café|coffee|茶|烘焙|bakery|早午餐|brunch|餐廳|restaurant/i.test(it.name + ' ' + text.slice(0, 200))) it.kind = 'c';
