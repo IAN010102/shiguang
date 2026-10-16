@@ -1,6 +1,6 @@
 /* 拾光小本 service worker: offline shell + notification click.
    Bump VERSION whenever index.html changes so installed copies refresh. */
-const VERSION = 'lf-2026-10-16-3';
+const VERSION = 'lf-2026-10-16-4';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -15,6 +15,8 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   if (url.origin === location.origin) {
     if (req.mode === 'navigate') {
+      /* only the app page itself may refresh the offline shell; any other page (a test page, a 404) must not overwrite it */
+      if (!/\/(index\.html)?$/.test(url.pathname)) return;
       e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(VERSION).then(c => c.put('index.html', copy)); return r; }).catch(() => caches.match('index.html')));
       return;
     }
