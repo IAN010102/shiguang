@@ -1,6 +1,6 @@
 /* 拾光小本 service worker: offline shell + notification click.
    Bump VERSION whenever index.html changes so installed copies refresh. */
-const VERSION = 'lf-2026-10-16-4';
+const VERSION = 'lf-2026-10-18-1';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 
 self.addEventListener('install', e => {

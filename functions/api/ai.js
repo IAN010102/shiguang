@@ -394,7 +394,10 @@ export async function onRequestPost({ request, env }) {
         }
       } catch { /* keep the first answer */ }
     }
-    if (items.length === 1 && looksLikeStudy(text) && !items[0].date && !['i', 'q', 'b'].includes(items[0].kind) && (kinds.includes('i') || kinds.includes('q'))) {
+    // A small model sometimes calls lecture notes a "book" (a title like "Lecture 6" looks like one). Only keep the book label when the text
+    // really has book signs (author, ISBN, page count); otherwise sort it again as study material.
+    const bookCue = /ISBN|作者|出版|著\b|\bauthor\b|paperback|hardcover|\bby\s+[A-Z][a-z]+|共\s*\d+\s*頁|\b\d+\s*pages\b/i.test(text);
+    if (items.length === 1 && looksLikeStudy(text) && (items[0].kind === 'b' ? !bookCue : !items[0].date) && !['i', 'q'].includes(items[0].kind) && (kinds.includes('i') || kinds.includes('q'))) {
       try {
         const again = await runSort([kinds.includes('i') ? 'i' : 'q'], 'The content is study material (class or lecture notes, formulas, definitions). It is for review: purpose must be "review", and "summary", "recall_q" and "recall_a" must be filled in.');
         if (again.length === 1 && again[0].name) items = again;
