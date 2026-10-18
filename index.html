@@ -632,7 +632,10 @@ html[data-motion="reduce"] .acc.card[open] .inner{ animation:none; }
 @keyframes swing{ 0%,100%{ transform:rotate(-7deg); } 50%{ transform:rotate(7deg); } }
 .introsub{ margin:-10px 0 0; max-width:300px; text-align:center; font-size:.875rem; line-height:1.55; color:var(--ink2); }
 .introsub:empty{ display:none; }
-.langpill{ height:34px; min-width:44px; padding:0 12px; margin-top:5px; border-radius:17px; font-weight:700; font-size:.8125rem; color:var(--ink2); background:var(--grid); }
+.langpill{ height:34px; min-width:44px; padding:0 12px 0 10px; margin-top:5px; border-radius:17px; font-weight:700; font-size:.8125rem; letter-spacing:.04em; color:var(--ink); background:var(--sheet); border:1px solid var(--grid); border:1px solid color-mix(in srgb,var(--ink2) 40%,transparent); display:inline-flex; align-items:center; justify-content:center; gap:6px; transition:transform .12s; }
+.langpill:active{ transform:scale(.96); }
+.langpill:focus-visible{ outline:2px solid var(--stamp); outline-offset:2px; }
+.langpill::before{ content:""; width:14px; height:14px; flex:none; background:var(--stamp); -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3c2.6 2.6 3.9 5.6 3.9 9s-1.3 6.4-3.9 9c-2.6-2.6-3.9-5.6-3.9-9S9.4 5.6 12 3z'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3c2.6 2.6 3.9 5.6 3.9 9s-1.3 6.4-3.9 9c-2.6-2.6-3.9-5.6-3.9-9S9.4 5.6 12 3z'/%3E%3C/svg%3E") center/contain no-repeat; }
 .intro .langpill{ position:absolute; top:calc(14px + env(safe-area-inset-top,0px)); right:14px; margin:0; height:36px; min-width:48px; z-index:2; }
 .intro.go .langpill{ opacity:0; }
 .tapme{ margin:0; font-size:1.0625rem; color:var(--ink2); letter-spacing:.08em; animation:pulse 2.2s ease-in-out 1.6s infinite; transition:opacity .25s ease; }
