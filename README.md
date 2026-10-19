@@ -6,6 +6,17 @@ Live demo: https://littlefinds.pages.dev/ · License: MIT
 
 > Built for the Nebius x NVIDIA Global AI Hackathon, Best Apps & Agents track.
 
+## Try it in 30 seconds
+
+No sign-up. Open the live demo, tap **AI paste** (the button at the bottom right), and paste any of these:
+
+- A café: `Little Oak Cafe, 台北市大安區和平東路二段 · matcha latte, quiet, open until 9pm`
+- A message with two events (it splits them into two cards)
+- A photo of a blackboard or lecture slide (use the upload button): it becomes a study note
+- A real exhibition: the card gets a "checked online" line with a source link, or says it found nothing
+
+The first request after a while can take a few seconds; text takes about 1 to 3 seconds and photos about 4 to 8 seconds.
+
 ## The problem
 
 We screenshot events, cafés, books and deadlines, feel like we've "saved" them, and never look again.
@@ -60,7 +71,7 @@ Deploy: connect the repo to Cloudflare Pages (no build step, output directory `/
 | `PER_IP_PER_HOUR` | no | Request cap per visitor (default 40) |
 | `AI_THINKING` | no | `1` re-enables the model's long reasoning (slower) |
 
-Without a key the app still works with rule-based sorting.
+Without a key the app still works with rule-based sorting. The per-visitor cap is a best-effort in-memory limit; set a spend limit on the Nebius account as the real guard.
 
 ## Where NVIDIA Nemotron and Nebius Token Factory are used
 
@@ -79,6 +90,7 @@ The project was started during the Submission Period (early September 2026). The
 - A one-tap "AI paste" entry point on every screen
 - Server-side proxy with rate limiting and timeouts
 - English UI pass; first visit follows the browser language
+- October 14 to 19: lecture photos no longer get filed as books, the full original text is kept on the note, a duplicate warning on the result card, quick status and rating on recommendation cards, and layout fixes found while testing on a phone
 
 ## Data and privacy
 
