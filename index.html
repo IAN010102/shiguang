@@ -50,7 +50,8 @@ html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-mo
   animation-duration:.01ms !important; animation-delay:0s !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; transition-delay:0s !important;
 }
 
-.wrap{ max-width:520px; margin:0 auto; padding:14px 18px 130px; }
+.wrap{ max-width:520px; margin:0 auto; padding:14px 18px 130px; touch-action:pan-y pinch-zoom; }
+html{ overscroll-behavior-x:none; }
 
 /* header */
 .top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
@@ -465,7 +466,7 @@ html[data-motion="reduce"] .mfx{ animation:none; }
 .empty{ text-align:center; color:var(--ink2); padding:38px 10px 10px; }
 .empty svg{ width:120px; color:var(--ink); }
 .empty p{ margin:10px 0 0; }
-.more{ height:2px; }
+div.more{ height:2px; }
 
 .fab{
   position:fixed; right:18px; bottom:calc(22px + env(safe-area-inset-bottom,0px)); z-index:30;
@@ -481,7 +482,7 @@ html[data-motion="reduce"] .mfx{ animation:none; }
 .backdrop{ position:absolute; inset:0; background:rgba(20,26,40,.5); animation:fade .24s ease both; }
 .sheet{
   position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:min(560px,100%); max-height:92%; overflow-y:auto; overscroll-behavior:contain;
-  background:var(--sheet); color:var(--ink); border-radius:26px 26px 0 0; padding:20px 20px calc(26px + env(safe-area-inset-bottom,0px));
+  background:var(--sheet); color:var(--ink); border-radius:26px 26px 0 0; padding:20px 20px calc(44px + env(safe-area-inset-bottom,0px)); overflow-x:hidden; overflow-wrap:anywhere; touch-action:pan-y pinch-zoom;
   animation:up .32s cubic-bezier(.2,.8,.2,1) both;
 }
 .sheetwrap.still .backdrop, .sheetwrap.still .sheet{ animation:none; }
@@ -520,6 +521,8 @@ html[lang="en"] .pad textarea{ font-family:Georgia,"Times New Roman",serif; }
 .seg button.on{ border-style:solid; border-color:var(--stamp); color:var(--stamp); background:rgba(0,51,102,.1); }
 .addrow{ display:flex; gap:8px; margin-top:10px; }
 .addrow .field{ flex:1; min-width:0; padding:6px 14px; }
+.rrate{ margin-top:6px; }
+.rrate .cupbtn{ font-size:1.25rem; padding:2px 4px; }
 .cupbtn{ font-size:1.5rem; padding:0 3px; opacity:.3; transition:opacity .15s, transform .15s; }
 .cupbtn.on{ opacity:1; }
 .cupbtn:active{ transform:scale(1.2); }
@@ -811,7 +814,7 @@ details.more[open]>summary{ border-style:solid; }
     eR0:'還沒有推薦。<br>朋友說「你一定要看」的，先記在這。', eRx:'沒有符合的推薦。', eW0:'還沒有想買的東西。<br>心動的先放進來，冷靜幾天再決定。', eWx:'沒有符合的項目。',
     rTodo:'想試', rDone:'試過了', rPass:'沒緣分', rNoFrom:'有人推薦', rFromLabel:function(n){return n+' 推薦'}, linkBtn:'連結',
     rNew:'記一則推薦', rEdit:'編輯推薦', rName:'推薦的是什麼', rNamePh:'例如：影集名稱、店名、App', rFrom:'誰推薦的', rFromPh:'朋友的名字', rWhy:'他怎麼說', rWhyPh:'把他的原話記下來', rLink:'連結（選填）', rKinds:'類別（可多選）', rNote:'我的心得（選填）', rNotePh:'試過之後的感覺', rRating:'我的評價',
-    replyBtn:'複製回覆', markedTried:'已標為試過', needRName:'先寫推薦的是什麼', dupR:'已經記過這個推薦了。再按一次，還是會新增。',
+    replyBtn:'複製回覆', rBack:'改回想試', rBackDone:'已改回想試', rPassDone:'已標為沒緣分', markedTried:'已標為試過', needRName:'先寫推薦的是什麼', dupR:'已經記過這個推薦了。再按一次，還是會新增。',
     replyDone:function(n,s,note){return ('你推薦的「'+n+'」我試過了！'+(s?' '+s:'')+(note?' '+note:'')).trim()},
     replyTodo:function(n){return '你推薦的「'+n+'」我先記下來了，找時間試試！'},
     replyPass:function(n,note){return ('你推薦的「'+n+'」我試了一下，好像不太是我的菜。'+(note?' '+note:'')).trim()},
@@ -1011,7 +1014,7 @@ details.more[open]>summary{ border-style:solid; }
     eR0:'No recommendations yet.<br>Save what friends tell you to try.', eRx:'No matching recommendations.', eW0:'Nothing on the wishlist yet.<br>Add what tempts you and let it cool off first.', eWx:'No matching items.',
     rTodo:'Want to try', rDone:'Tried', rPass:'Not for me', rNoFrom:'Someone recommended', rFromLabel:function(n){return n+' recommends'}, linkBtn:'Link',
     rNew:'Add a recommendation', rEdit:'Edit recommendation', rName:'What was recommended', rNamePh:'e.g. a series, a place, an app', rFrom:'Recommended by', rFromPh:"A friend's name", rWhy:'What they said', rWhyPh:'Note their exact words', rLink:'Link (optional)', rKinds:'Type (pick any)', rNote:'My thoughts (optional)', rNotePh:'How it felt after trying', rRating:'My rating',
-    replyBtn:'Copy reply', markedTried:'Marked as tried', needRName:'Add what was recommended first', dupR:'This recommendation is already saved. Tap again to add anyway.',
+    replyBtn:'Copy reply', rBack:'Back to want to try', rBackDone:'Moved back to want to try', rPassDone:'Marked as not for me', markedTried:'Marked as tried', needRName:'Add what was recommended first', dupR:'This recommendation is already saved. Tap again to add anyway.',
     replyDone:function(n,s,note){return ('I tried "'+n+'" that you recommended!'+(s?' '+s:'')+(note?' '+note:'')).trim()},
     replyTodo:function(n){return 'I saved "'+n+'" that you recommended. Will try it soon!'},
     replyPass:function(n,note){return ('I gave "'+n+'" a try, but it was not quite for me.'+(note?' '+note:'')).trim()},
@@ -1825,12 +1828,14 @@ details.more[open]>summary{ border-style:solid; }
       +'<div class="rcol"><p class="rfrom">'+esc(r.from?t('rFromLabel',r.from):t('rNoFrom'))+'</p>'
       +'<div class="bubble"><span class="stamp '+stamp[0]+'">'+esc(stamp[1])+'</span><h4>'+esc(r.name)+'</h4>'
       +(r.why?'<p class="said wk">“'+esc(r.why)+'”</p>':'')
-      +((r.status==='done'&&r.rating)?'<div class="cups">'+stars(r.rating)+'</div>':'')
+      +((r.status==='done'&&!interactive&&r.rating)?'<div class="cups">'+stars(r.rating)+'</div>':'')
+      +((r.status==='done'&&interactive)?'<div class="rrate" role="group" aria-label="'+esc(t('rRating'))+'">'+[1,2,3,4,5].map(function(n){return '<button class="cupbtn'+(r.rating>=n?' on':'')+'" data-act="rRateQ" data-v="'+r.id+':'+n+'" aria-label="'+n+'">★</button>'}).join('')+'</div>':'')
       +(r.note?'<p class="said wk" style="opacity:.8">'+esc(r.note)+'</p>':'')
       +tagsHtml(r.cats,rColor)
       +'<div class="links">'
         +(r.link?'<a class="lk" href="'+esc(r.link)+'" target="_blank" rel="noopener noreferrer">'+t('linkBtn')+'</a>':'')
-        +((interactive&&r.status==='todo')?'<button class="lk solid" data-act="rTried" data-v="'+r.id+'">'+t('rDone')+'</button>':'')
+        +((interactive&&r.status==='todo')?'<button class="lk solid" data-act="rTried" data-v="'+r.id+'">'+t('rDone')+'</button><button class="lk" data-act="rSet" data-v="'+r.id+':pass">'+t('rPass')+'</button>':'')
+        +((interactive&&r.status!=='todo')?'<button class="lk" data-act="rSet" data-v="'+r.id+':todo">'+t('rBack')+'</button>':'')
         +((interactive&&r.status!=='todo')?'<button class="lk" data-act="rReply" data-v="'+r.id+'">'+t('replyBtn')+'</button>':'')
         +((interactive&&(r.cats||[]).indexOf('店家')>=0&&S.set.mods.c!==false)?'<button class="lk" data-act="rConv" data-v="'+r.id+':c">'+t('convQuickC')+'</button>':(interactive&&(r.cats||[]).indexOf('書')>=0&&S.set.mods.b!==false)?'<button class="lk" data-act="rConv" data-v="'+r.id+':b">'+t('convQuickB')+'</button>':'')
       +'</div></div></div></div>';
@@ -4441,6 +4446,14 @@ details.more[open]>summary{ border-style:solid; }
         toast(t('markedTried'),t('replyBtn'),function(){ copy(replyText(rt)); });
         break;
       }
+      case 'rSet': {
+        var rs=v.split(':'), rq=rById(rs[0]); if(!rq||['todo','done','pass'].indexOf(rs[1])<0) break;
+        var pv2={status:rq.status,doneDate:rq.doneDate,rating:rq.rating};
+        rq.status=rs[1]; if(rs[1]==='done'&&!rq.doneDate) rq.doneDate=isoOf(new Date()); save(); afterChange();
+        toast(t(rs[1]==='todo'?'rBackDone':'rPassDone'),t('undo'),function(){ rq.status=pv2.status; rq.doneDate=pv2.doneDate; rq.rating=pv2.rating; save(); afterChange(); });
+        break;
+      }
+      case 'rRateQ': { var rr2=v.split(':'), rq2=rById(rr2[0]); if(!rq2) break; var nv=+rr2[1]; rq2.rating=(rq2.rating===nv)?0:nv; save(); afterChange(); break; }
       case 'rReply': { var rp=rById(v); if(rp) copy(replyText(rp)); break; }
       case 'rReplyDraft': { syncDraft(); copy(replyText(sheet.d)); break; }
 
