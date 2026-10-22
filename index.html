@@ -1784,7 +1784,7 @@ details.more[open]>summary{ border-style:solid; }
     var m={}; S.recs.forEach(function(r){ var n=(r.from||'').trim(); if(n) m[n]=(m[n]||0)+1; });
     return Object.keys(m).sort(function(a,b){return m[b]-m[a]||(a<b?-1:1)}).slice(0,limit||8);
   }
-  function safeUrl(u){ u=String(u||'').trim(); return /^https?:\/\//i.test(u)?u:'#'; }
+  function safeUrl(u){ u=String(u||'').trim(); if(/^https?:\/\//i.test(u)) return u; if(/^[a-z][a-z0-9+.-]*:/i.test(u)) return '#'; return u?'https://'+u:'#'; }
   function normLink(l){ l=(l||'').trim(); return (l&&!/^https?:\/\//i.test(l))?'https://'+l:l; }
   function numOrEmpty(v){ var n=parseFloat(String(v==null?'':v).replace(/[^\d.]/g,'')); return isNaN(n)?'':n; }
   function money(n){ return (S.set.cur||'NT$')+Number(n||0).toLocaleString('en-US'); }
