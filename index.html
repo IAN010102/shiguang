@@ -1768,7 +1768,7 @@ details.more[open]>summary{ border-style:solid; }
       +tagsHtml(e.cats,eColor)
       +'<div class="links">'
         +(e.place?'<a class="lk" href="'+esc('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e.place))+'" target="_blank" rel="noopener noreferrer">'+t('mapBtn')+'</a>':'')
-        +(e.link?'<a class="lk" href="'+esc(e.link)+'" target="_blank" rel="noopener noreferrer">'+t('official')+'</a>':'')
+        +(e.link?'<a class="lk" href="'+esc(safeUrl(e.link))+'" target="_blank" rel="noopener noreferrer">'+t('official')+'</a>':'')
         +(cal?'<a class="lk" href="'+esc(cal)+'" target="_blank" rel="noopener noreferrer">'+t('addCal')+'</a>':'')
         +((interactive&&st.past&&e.status!=='been')?'<button class="lk solid" data-act="eBeen" data-v="'+e.id+'">'+t('markBeen')+'</button>':'')
       +'</div></div></div></div>';
@@ -1784,6 +1784,7 @@ details.more[open]>summary{ border-style:solid; }
     var m={}; S.recs.forEach(function(r){ var n=(r.from||'').trim(); if(n) m[n]=(m[n]||0)+1; });
     return Object.keys(m).sort(function(a,b){return m[b]-m[a]||(a<b?-1:1)}).slice(0,limit||8);
   }
+  function safeUrl(u){ u=String(u||'').trim(); return /^https?:\/\//i.test(u)?u:'#'; }
   function normLink(l){ l=(l||'').trim(); return (l&&!/^https?:\/\//i.test(l))?'https://'+l:l; }
   function numOrEmpty(v){ var n=parseFloat(String(v==null?'':v).replace(/[^\d.]/g,'')); return isNaN(n)?'':n; }
   function money(n){ return (S.set.cur||'NT$')+Number(n||0).toLocaleString('en-US'); }
@@ -1833,7 +1834,7 @@ details.more[open]>summary{ border-style:solid; }
       +(r.note?'<p class="said wk" style="opacity:.8">'+esc(r.note)+'</p>':'')
       +tagsHtml(r.cats,rColor)
       +'<div class="links">'
-        +(r.link?'<a class="lk" href="'+esc(r.link)+'" target="_blank" rel="noopener noreferrer">'+t('linkBtn')+'</a>':'')
+        +(r.link?'<a class="lk" href="'+esc(safeUrl(r.link))+'" target="_blank" rel="noopener noreferrer">'+t('linkBtn')+'</a>':'')
         +((interactive&&r.status==='todo')?'<button class="lk solid" data-act="rTried" data-v="'+r.id+'">'+t('rDone')+'</button><button class="lk" data-act="rSet" data-v="'+r.id+':pass">'+t('rPass')+'</button>':'')
         +((interactive&&r.status!=='todo')?'<button class="lk" data-act="rSet" data-v="'+r.id+':todo">'+t('rBack')+'</button>':'')
         +((interactive&&r.status!=='todo')?'<button class="lk" data-act="rReply" data-v="'+r.id+'">'+t('replyBtn')+'</button>':'')
@@ -1862,7 +1863,7 @@ details.more[open]>summary{ border-style:solid; }
       +'</div></div>'
       +(w.note?'<p class="wnote wk">'+esc(w.note)+'</p>':'')
       +tagsHtml(w.cats,wColor)
-      +((w.link||acts)?'<div class="links">'+(w.link?'<a class="lk" href="'+esc(w.link)+'" target="_blank" rel="noopener noreferrer">'+t('linkBtn')+'</a>':'')+acts+'</div>':'')
+      +((w.link||acts)?'<div class="links">'+(w.link?'<a class="lk" href="'+esc(safeUrl(w.link))+'" target="_blank" rel="noopener noreferrer">'+t('linkBtn')+'</a>':'')+acts+'</div>':'')
       +'</div>';
   }
   function bColor(n){var f=S.bcats.find(function(x){return x.n===n}); return f?f.c:'#FFFFFF'}
@@ -2832,7 +2833,7 @@ details.more[open]>summary{ border-style:solid; }
     return '<div class="kcard"'+kOpen(inter,'lopen',x.id)+'><span class="stamp '+st[0]+'">'+esc(st[1])+'</span>'
       +'<h4>'+esc(x.name||dom||x.url)+'</h4>'+(dom?'<p class="author">'+esc(dom)+'</p>':'')
       +(x.note?'<p class="info wk">'+esc(x.note)+'</p>':'')+kTags('l',x.cats)
-      +'<div class="links">'+(x.url?'<a class="lk" href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">'+t('lOpen')+'</a>':'')
+      +'<div class="links">'+(x.url?'<a class="lk" href="'+esc(safeUrl(x.url))+'" target="_blank" rel="noopener noreferrer">'+t('lOpen')+'</a>':'')
       +((inter&&x.status!=='read')?'<button class="lk solid" data-act="lMark" data-v="'+x.id+'">'+t('lMarkRead')+'</button>':'')+'</div></div>';
   }
   function acardHtml(x,inter){
@@ -4697,7 +4698,7 @@ details.more[open]>summary{ border-style:solid; }
     h+=row('dtHow',a.how_to?esc(a.how_to):'');
     if(a.next_step) h+='<div style="margin:10px 0"><div class="hint" style="margin:0">'+esc(t('dtNext'))+(a.done?' · '+esc(t('dtDoneTag')):'')+'</div><div style="color:var(--ink);'+(a.done?'text-decoration:line-through;opacity:.6':'')+'">'+esc(a.next_step)+'</div></div>';
     if(a.verify) h+=verHtml(a.verify,false);
-    h+=row('dtLink',e.link?'<a style="color:var(--stamp);text-decoration:underline;text-underline-offset:3px" href="'+esc(e.link)+'" target="_blank" rel="noopener noreferrer">'+esc(e.link.replace(/^https?:\/\//,'').slice(0,48))+'</a>':'');
+    h+=row('dtLink',e.link?'<a style="color:var(--stamp);text-decoration:underline;text-underline-offset:3px" href="'+esc(safeUrl(e.link))+'" target="_blank" rel="noopener noreferrer">'+esc(e.link.replace(/^https?:\/\//,'').slice(0,48))+'</a>':'');
     h+=row('dtNote',e.price?esc(e.price):'');
     h+=row('dtNote',e.note?esc(e.note):'');
     if(e.info) h+='<details class="more" style="margin-top:12px;color:var(--ink)"><summary style="color:var(--ink)">'+esc(t('dtOrig'))+'</summary><p class="hint" style="margin-top:8px;white-space:pre-wrap">'+esc(e.info)+'</p></details>';
