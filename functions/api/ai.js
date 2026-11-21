@@ -267,12 +267,11 @@ export async function onRequestPost({ request, env }) {
   if (!env.NEBIUS_API_KEY) return json({ error: 'not_configured' }, 503);
 
   // Only our own pages may call this endpoint (blocks other sites from spending the API budget).
+  // Browsers always send Origin on a POST fetch, so a request without one did not come from our page.
   const origin = request.headers.get('origin');
-  if (origin) {
-    let ok = false;
-    try { ok = new URL(origin).host === new URL(request.url).host; } catch {}
-    if (!ok) return json({ error: 'forbidden' }, 403);
-  }
+  let sameOrigin = false;
+  try { sameOrigin = !!origin && new URL(origin).host === new URL(request.url).host; } catch {}
+  if (!sameOrigin) return json({ error: 'forbidden' }, 403);
   if (Number(request.headers.get('content-length') || 0) > 6_000_000) return json({ error: 'too_large' }, 413);
 
   const ip = request.headers.get('cf-connecting-ip') || 'x';
